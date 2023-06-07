@@ -1,0 +1,9 @@
+repositories:
+  micro_ros_setup:
+    type: git
+    url: https://github.com/micro-ROS/micro_ros_setup
+    version: galactic
+  zbot_lino:
+    type: git
+    url: https://github.com/zealzel/zbot_lino
+    version: master
