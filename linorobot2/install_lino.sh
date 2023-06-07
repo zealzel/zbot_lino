@@ -13,11 +13,11 @@ LASER_SENSOR_ARRAY=(rplidar ldlidar ydlidar xv11)
 LASER_SENSOR_ARRAY+=("${DEPTH_SENSOR_ARRAY[@]}")
 
 if [ "$LASER_SENSOR" = "" ]; then
-  LASER_SENSOR=""
+  LASER_SENSOR="rplidar"
 fi
 
 if [ "$DEPTH_SENSOR" = "" ]; then
-  DEPTH_SENSOR=""
+  DEPTH_SENSOR="realsense"
 fi
 
 function install_rplidar {
