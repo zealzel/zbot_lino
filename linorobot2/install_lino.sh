@@ -106,22 +106,39 @@ echo
 
 echo
 echo "===================================================================="
+echo "Create workspace"
+echo "===================================================================="
+mkdir -p "$WORKSPACE"/src
+source /opt/ros/"$ROS_DISTRO"/setup.bash
+
+echo
+echo "===================================================================="
 echo "Ensure rosdep is initialized"
 echo "===================================================================="
-rosdep update || exit_code=$?
-if [[ $exit_code -ne 0 ]]; then
+if [ ! -f /etc/ros/rosdep/sources.list.d/20-default.list ]; then
   sudo rosdep init
   rosdep update --include-eol-distros
 fi
 
 echo
-echo "===================================================================="
-echo "Create workspace"
-echo "===================================================================="
-cd "$HOME"
-mkdir -p "$WORKSPACE"/src
-source /opt/ros/"$ROS_DISTRO"/setup.bash
-cd "$WORKSPACE"
+echo ====================================================================
+echo Basic check
+echo ====================================================================
+VCS_REPOS="zbot_lino.repos"
+vcs_source="$VCS_REPOS"
+if [ -d "$WORKSPACE" ]; then
+  if [ -f "$vcs_source" ]; then
+    echo "vcs_source: $vcs_source exists"
+  else
+    echo "ERROR: $vcs_source does not exist"
+    exit 1
+  fi
+  cp "$vcs_source" "$WORKSPACE" > /dev/null 2>&1
+  #cp "$vcs_source" "$WORKSPACE"
+else
+  echo "ERROR: $WORKSPACE does not exist"
+  exit 1
+fi
 
 echo
 echo "===================================================================="
@@ -145,37 +162,17 @@ echo "Install apt packages"
 echo "===================================================================="
 sudo apt install -y python3-vcstool build-essential
 
-#### 1.4 Download and install micro-ROS:
-# echo ======== 1.4 ========
-# cd "$WORKSPACE"
-# git clone -b "$ROS_DISTRO" https://github.com/micro-ROS/micro_ros_setup.git src/micro_ros_setup
-# sudo apt update && rosdep update
-
-# rosdep install --from-path src --ignore-src -y
-# colcon build
-# source "$WORKSPACE"/install/setup.bash
-
-#### 2.1 Download linorobot2:
-# echo ======== 2.1 ========
-# cd "$WORKSPACE"
-# git clone -b "$ROS_DISTRO" https://github.com/zealzel/zbot_lino src/zbot_lino
-
-#### 2.2 Ignore Gazebo Packages on robot computer (optional)
 echo
 echo "===================================================================="
-echo "set COLCON_IGNORE"
-echo "===================================================================="
-cd "$WORKSPACE"/src/zbot_lino/linorobot2/linorobot2_gazebo
-touch COLCON_IGNORE
-
-echo
-echo "===================================================================="
-echo "rosdep update"
+echo "Install micro_ros_setup"
 echo "===================================================================="
 cd "$WORKSPACE"
-rosdep update && rosdep install --from-path src --ignore-src -y --skip-keys microxrcedds_agent
-colcon build
-source "$WORKSPACE"/install/setup.bash
+vcs_source="$VCS_REPOS"
+vcs import src < "$vcs_source"
+cd "$WORKSPACE/src/zbot_lino/linorobot2" && touch COLCON_IGNORE
+cd $WORKSPACE
+rosdep install --from-path src --ignore-src -y
+colcon build && source "$WORKSPACE"/install/setup.bash
 
 echo
 echo "===================================================================="
@@ -185,7 +182,13 @@ ros2 run micro_ros_setup create_agent_ws.sh
 ros2 run micro_ros_setup build_agent.sh
 source "$WORKSPACE"/install/setup.bash
 
-exit 0
+echo
+echo "===================================================================="
+echo "Build zbot_lino"
+echo "===================================================================="
+cd "$WORKSPACE/src/zbot_lino/linorobot2" && rm COLCON_IGNORE
+cd $WORKSPACE && colcon build
+source "$WORKSPACE"/install/setup.bash
 
 ## ENV Variables
 echo ======== Env Variables ========
