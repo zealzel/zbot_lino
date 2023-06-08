@@ -160,7 +160,7 @@ echo
 echo "===================================================================="
 echo "Install apt packages"
 echo "===================================================================="
-sudo apt install -y python3-vcstool build-essential
+sudo apt install -y python3-vcstool build-essential ros-${ROS_DISTRO}-robot-localization
 
 echo
 echo "===================================================================="
