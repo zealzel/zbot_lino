@@ -38,7 +38,7 @@ class GY85IMU: public IMUInterface
         //constants specific to the sensor
         const float accel_scale_ = 1 / 256.0;
         const float gyro_scale_ = 1 / 14.375;
-        const float mag_scale_ = 0.92 * MGAUSS_TO_UTESLA // uT/LSB
+        const float mag_scale_ = 0.92 * MGAUSS_TO_UTESLA; // uT/LSB
 
         // driver objects to be used
         ADXL345 accelerometer_;
