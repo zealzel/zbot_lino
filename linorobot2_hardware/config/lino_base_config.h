@@ -135,12 +135,12 @@ ROBOT ORIENTATION
 #ifdef USE_BTS7960_MOTOR_DRIVER
 // motor1 is left and motor2 is right
   #define MOTOR1_PWM -1 //DON'T TOUCH THIS! This is just a placeholder
-  #define MOTOR1_IN_A 25 // Pin no 21 is not a PWM pin on Teensy 4.x, you can use pin no 1 instead.
-  #define MOTOR1_IN_B 24 // Pin no 20 is not a PWM pin on Teensy 4.x, you can use pin no 0 instead.
+  #define MOTOR1_IN_A 2
+  #define MOTOR1_IN_B 3
 
   #define MOTOR2_PWM -1 //DON'T TOUCH THIS! This is just a placeholder
-  #define MOTOR2_IN_A 11
-  #define MOTOR2_IN_B 12
+  #define MOTOR2_IN_A 28
+  #define MOTOR2_IN_B 29
 
   // #define MOTOR3_PWM -1 //DON'T TOUCH THIS! This is just a placeholder
   // #define MOTOR3_IN_A 22

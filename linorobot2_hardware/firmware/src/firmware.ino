@@ -267,6 +267,8 @@ void moveBase()
     float current_rpm2 = motor2_encoder.getRPM();
     // float current_rpm3 = motor3_encoder.getRPM();
     // float current_rpm4 = motor4_encoder.getRPM();
+    float current_rpm3 = 0.0;
+    float current_rpm4 = 0.0;
 
     // the required rpm is capped at -/+ MAX_RPM to prevent the PID from having too much error
     // the PWM value sent to the motor driver is the calculated PID based on required RPM vs measured RPM
@@ -278,8 +280,8 @@ void moveBase()
     Kinematics::velocities current_vel = kinematics.getVelocities(
         current_rpm1,
         current_rpm2,
-        // current_rpm3,
-        // current_rpm4
+        current_rpm3,
+        current_rpm4
     );
 
     unsigned long now = millis();
