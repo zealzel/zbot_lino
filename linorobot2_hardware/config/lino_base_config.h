@@ -77,11 +77,13 @@ ROBOT ORIENTATION
 #define MOTOR4_INV false
 
 // ENCODER PINS
+// (38,39), (14,15) worked
+// (21,22), (16,17) not worked -> why?
 #define MOTOR1_ENCODER_A 14
 #define MOTOR1_ENCODER_B 15
 
-#define MOTOR2_ENCODER_A 11
-#define MOTOR2_ENCODER_B 12
+#define MOTOR2_ENCODER_A 40
+#define MOTOR2_ENCODER_B 41
 
 // #define MOTOR3_ENCODER_A 17
 // #define MOTOR3_ENCODER_B 16
