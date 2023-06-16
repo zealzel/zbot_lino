@@ -90,11 +90,11 @@ ROBOT ORIENTATION
 #define MOTOR2_ENCODER_A 40
 #define MOTOR2_ENCODER_B 41
 
-// #define MOTOR3_ENCODER_A 17
-// #define MOTOR3_ENCODER_B 16
+#define MOTOR3_ENCODER_A 17
+#define MOTOR3_ENCODER_B 16
 
-// #define MOTOR4_ENCODER_A 9
-// #define MOTOR4_ENCODER_B 10
+#define MOTOR4_ENCODER_A 9
+#define MOTOR4_ENCODER_B 10
 
 // MOTOR PINS
 #ifdef USE_GENERIC_2_IN_MOTOR_DRIVER
@@ -149,13 +149,13 @@ ROBOT ORIENTATION
   #define MOTOR2_IN_A 28
   #define MOTOR2_IN_B 29
 
-  // #define MOTOR3_PWM -1 //DON'T TOUCH THIS! This is just a placeholder
-  // #define MOTOR3_IN_A 22
-  // #define MOTOR3_IN_B 23
+  #define MOTOR3_PWM -1 //DON'T TOUCH THIS! This is just a placeholder
+  #define MOTOR3_IN_A 20
+  #define MOTOR3_IN_B 21
 
-  // #define MOTOR4_PWM -1 //DON'T TOUCH THIS! This is just a placeholder
-  // #define MOTOR4_IN_A 4
-  // #define MOTOR4_IN_B 3
+  #define MOTOR4_PWM -1 //DON'T TOUCH THIS! This is just a placeholder
+  #define MOTOR4_IN_A 22
+  #define MOTOR4_IN_B 23
 
   #define PWM_MAX pow(2, PWM_BITS) - 1
   #define PWM_MIN -PWM_MAX
