@@ -47,17 +47,22 @@ ROBOT ORIENTATION
 */
 
 //define your robot' specs here
-#define MOTOR_MAX_RPM 230                   // motor's max RPM
-#define MAX_RPM_RATIO 0.85                  // max RPM allowed for each MAX_RPM_ALLOWED = MOTOR_MAX_RPM * MAX_RPM_RATIO
+#define MOTOR_MAX_RPM 325                   // motor's max RPM
+#define MAX_RPM_RATIO 0.5                  // max RPM allowed for each MAX_RPM_ALLOWED = MOTOR_MAX_RPM * MAX_RPM_RATIO
 #define MOTOR_OPERATING_VOLTAGE 24          // motor's operating voltage (used to calculate max RPM)
 #define MOTOR_POWER_MAX_VOLTAGE 12          // max voltage of the motor's power source (used to calculate max RPM)
 #define MOTOR_POWER_MEASURED_VOLTAGE 12     // current voltage reading of the power connected to the motor (used for calibration)
 
 // TBD
-#define COUNTS_PER_REV1 144000              // wheel1 encoder's no of ticks per rev
-#define COUNTS_PER_REV2 144000              // wheel2 encoder's no of ticks per rev
-#define COUNTS_PER_REV3 144000              // wheel3 encoder's no of ticks per rev
-#define COUNTS_PER_REV4 144000              // wheel4 encoder's no of ticks per rev
+// Don't use the calibration values, use thoery value instead
+// 54000 = 500 * 27 * 4
+// PPR: 500
+// gear ratio: 27
+// multiplier: 4
+#define COUNTS_PER_REV1 54000              // wheel1 encoder's no of ticks per rev
+#define COUNTS_PER_REV2 54000              // wheel2 encoder's no of ticks per rev
+#define COUNTS_PER_REV3 54000              // wheel3 encoder's no of ticks per rev
+#define COUNTS_PER_REV4 54000              // wheel4 encoder's no of ticks per rev
 //
 #define WHEEL_DIAMETER 0.125                // wheel's diameter in meters
 #define LR_WHEELS_DISTANCE 0.3638            // distance between left and right wheels
