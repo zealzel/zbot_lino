@@ -71,7 +71,7 @@ ROBOT ORIENTATION
 
 // INVERT ENCODER COUNTS
 #define MOTOR1_ENCODER_INV false
-#define MOTOR2_ENCODER_INV false
+#define MOTOR2_ENCODER_INV true // Align with hardware wire routing. If not set, right motor will not function correctly.
 #define MOTOR3_ENCODER_INV false
 #define MOTOR4_ENCODER_INV false
 
