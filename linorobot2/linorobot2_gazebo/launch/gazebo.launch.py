@@ -12,10 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import os
 from launch import LaunchDescription
-from launch.actions import DeclareLaunchArgument, ExecuteProcess, IncludeLaunchDescription
-from launch.substitutions import LaunchConfiguration, Command, PathJoinSubstitution
+from launch.actions import (
+    DeclareLaunchArgument,
+    IncludeLaunchDescription,
+)
+from launch.substitutions import LaunchConfiguration, PathJoinSubstitution
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch_ros.actions import Node
 from launch_ros.substitutions import FindPackageShare
@@ -23,75 +25,80 @@ from launch_ros.substitutions import FindPackageShare
 
 def generate_launch_description():
     use_sim_time = True
-    
-    joy_launch_path = PathJoinSubstitution(
-        [FindPackageShare('linorobot2_bringup'), 'launch', 'joy_teleop.launch.py']
-    )
-
-    ekf_config_path = PathJoinSubstitution(
-        [FindPackageShare("linorobot2_base"), "config", "ekf.yaml"]
-    )
-
     world_path = PathJoinSubstitution(
         [FindPackageShare("linorobot2_gazebo"), "worlds", "playground.world"]
     )
-
-    description_launch_path = PathJoinSubstitution(
-        [FindPackageShare('linorobot2_description'), 'launch', 'description.launch.py']
+    ekf_config_path = PathJoinSubstitution(
+        [FindPackageShare("linorobot2_base"), "config", "ekf.yaml"]
     )
-
-    return LaunchDescription([
-        DeclareLaunchArgument(
-            name='world', 
-            default_value=world_path,
-            description='Gazebo world'
+    description_launch_path = PathJoinSubstitution(
+        [FindPackageShare("linorobot2_description"), "launch", "description.launch.py"]
+    )
+    x_arg = DeclareLaunchArgument("x", default_value="0", description="x position")
+    y_arg = DeclareLaunchArgument("y", default_value="0", description="y position")
+    world_arg = DeclareLaunchArgument(
+        "world",
+        default_value=world_path,
+        description="Gazebo world",
+    )
+    gazebo = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource(
+            PathJoinSubstitution(
+                [
+                    FindPackageShare("gazebo_ros"),
+                    "launch",
+                    "gazebo.launch.py",
+                ]
+            )
         ),
-
-        ExecuteProcess(
-            cmd=['gazebo', '--verbose', '-s', 'libgazebo_ros_factory.so',  '-s', 'libgazebo_ros_init.so', LaunchConfiguration('world')],
-            output='screen'
-        ),
-
-        Node(
-            package='gazebo_ros',
-            executable='spawn_entity.py',
-            name='urdf_spawner',
-            output='screen',
-            arguments=["-topic", "robot_description", "-entity", "linorobot2"]
-        ),
-
-        Node(
-            package='linorobot2_gazebo',
-            executable='command_timeout.py',
-            name='command_timeout'
-        ),
-
-        Node(
-            package='robot_localization',
-            executable='ekf_node',
-            name='ekf_filter_node',
-            output='screen',
-            parameters=[
-                {'use_sim_time': use_sim_time}, 
-                ekf_config_path
-            ],
-            remappings=[("odometry/filtered", "odom")]
-        ),
-
-        IncludeLaunchDescription(
-            PythonLaunchDescriptionSource(description_launch_path),
-            launch_arguments={
-                'use_sim_time': str(use_sim_time),
-                'publish_joints': 'false',
-            }.items()
-        ),
-
-        IncludeLaunchDescription(
-            PythonLaunchDescriptionSource(joy_launch_path),
-        )
-    ])
-
-#sources: 
-#https://navigation.ros.org/setup_guides/index.html#
-#https://answers.ros.org/question/374976/ros2-launch-gazebolaunchpy-from-my-own-launch-file/
-#https://github.com/ros2/rclcpp/issues/940
+        launch_arguments={
+            "world": LaunchConfiguration("world"),
+        }.items(),
+    )
+    spawn_entity = Node(
+        package="gazebo_ros",
+        executable="spawn_entity.py",
+        arguments=[
+            "-topic",
+            "robot_description",
+            "-entity",
+            "zbot_lino",
+            "-x",
+            LaunchConfiguration("x"),
+            "-y",
+            LaunchConfiguration("y"),
+        ],
+        output="screen",
+    )
+    command_timeout = Node(
+        package="linorobot2_gazebo",
+        executable="command_timeout.py",
+        name="command_timeout",
+    )
+    robot_localization = Node(
+        package="robot_localization",
+        executable="ekf_node",
+        name="ekf_filter_node",
+        output="screen",
+        parameters=[{"use_sim_time": use_sim_time}, ekf_config_path],
+        remappings=[("odometry/filtered", "odom")],
+    )
+    launch_description = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource(description_launch_path),
+        launch_arguments={
+            "use_sim_time": str(use_sim_time),
+            "publish_joints": "false",
+        }.items(),
+    )
+    return LaunchDescription(
+        [
+            x_arg,
+            y_arg,
+            world_arg,
+            gazebo,
+            spawn_entity,
+            command_timeout,
+            robot_localization,
+            launch_description,
+        ]
+    )
