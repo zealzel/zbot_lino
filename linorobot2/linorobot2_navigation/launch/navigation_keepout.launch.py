@@ -1,10 +1,14 @@
 from launch import LaunchDescription
-from launch.actions import DeclareLaunchArgument, IncludeLaunchDescription
 from launch.substitutions import LaunchConfiguration, PathJoinSubstitution
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch.conditions import IfCondition
 from launch_ros.substitutions import FindPackageShare
 from launch_ros.actions import Node
+from launch.actions import (
+    DeclareLaunchArgument,
+    IncludeLaunchDescription,
+    TimerAction,
+)
 
 MAP_NAME = "playground"  # change to the name of your own map here
 
@@ -68,6 +72,13 @@ def generate_launch_description():
             "params_file": LaunchConfiguration("params_file"),
         }.items()
     )
+    # if not delayed, nav2_bringup will not able to launch controllers successfully
+    costmap_filter_info_delayed = LaunchDescription([
+        TimerAction(
+            period=4.0,
+            actions=[costmap_filter_info],
+        )],
+    )
     rviz = Node(
         package="rviz2",
         executable="rviz2",
@@ -85,8 +96,8 @@ def generate_launch_description():
             mask_arg,
             map_arg,
             params_arg,
-            costmap_filter_info,
             nav2_bringup,
+            costmap_filter_info_delayed,
             rviz,
         ]
     )
