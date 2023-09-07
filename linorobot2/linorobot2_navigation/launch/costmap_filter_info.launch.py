@@ -26,9 +26,6 @@ from nav2_common.launch import RewrittenYaml
 
 
 def generate_launch_description():
-    # Get the launch directory
-    costmap_filters_demo_dir = get_package_share_directory('nav2_costmap_filters_demo')
-
     # Create our own temporary YAML files that include substitutions
     lifecycle_nodes = ['filter_mask_server', 'costmap_filter_info_server']
 
