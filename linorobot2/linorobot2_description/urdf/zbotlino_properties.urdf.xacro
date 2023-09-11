@@ -30,6 +30,10 @@
     <origin xyz="${base_length/2+offset_x-0.085} 0 0.088" rpy="0 0 0"/>
   </xacro:property>
 
+  <xacro:property name="laser_pose1">
+    <origin xyz="${base_length/2+offset_x} 0 0.088" rpy="3.1415 0 0"/>
+  </xacro:property>
+
   <xacro:property name="depth_sensor_pose">
     <origin xyz="${0.2+offset_x} 0.0 0.045" rpy="0 0 0"/>
   </xacro:property>

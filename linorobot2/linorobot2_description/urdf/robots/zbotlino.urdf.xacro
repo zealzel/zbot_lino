@@ -63,7 +63,8 @@
   <xacro:imu/>
 
   <xacro:generic_laser>
-    <xacro:insert_block name="laser_pose" />
+    <!-- <xacro:insert_block name="laser_pose" /> -->
+    <xacro:insert_block name="laser_pose1" />
   </xacro:generic_laser>
   
   <xacro:depth_sensor>

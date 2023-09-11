@@ -33,7 +33,7 @@ def generate_launch_description():
             [
                 FindPackageShare("linorobot2_navigation"),
                 "config",
-                "navigation_keepout.yaml",
+                "navigation.yaml",
             ]
         ),
         description=(
