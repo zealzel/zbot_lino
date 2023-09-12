@@ -13,16 +13,26 @@
 # limitations under the License.
 
 from launch import LaunchDescription
-from launch.actions import DeclareLaunchArgument
+from launch.actions import DeclareLaunchArgument, IncludeLaunchDescription
 from launch.substitutions import LaunchConfiguration, PathJoinSubstitution
 from launch_ros.substitutions import FindPackageShare
 from launch.conditions import IfCondition, LaunchConfigurationEquals
 from launch_ros.actions import Node
 
 
+def get_path(package_name, subpaths):
+    return PathJoinSubstitution([FindPackageShare(package_name)] + subpaths)
+
+
 def generate_launch_description():
+    nanoscan3_launch_path = get_path("sick_safetyscanners2", ["launch", "sick_safetyscanners2_lifecycle_launch.py"])
+
     ydlidar_config_path = PathJoinSubstitution(
         [FindPackageShare("linorobot2_bringup"), "config", "ydlidar.yaml"]
+    )
+
+    nanoscan3_bringup = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource(nanoscan3_launch_path),
     )
 
     return LaunchDescription([
@@ -120,6 +130,6 @@ def generate_launch_description():
                 {'lidar_frame': LaunchConfiguration('frame_id')},
                 {'range_threshold': 0.005}
             ]
-        )
+        ),
+        nanoscan3_bringup,
     ])
-
