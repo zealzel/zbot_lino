@@ -34,6 +34,7 @@ def generate_launch_description():
 
     nanoscan3_bringup = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(nanoscan3_launch_path),
+        condition=LaunchConfigurationEquals('sensor', 'nanoscan3'),
     )
 
     return LaunchDescription([
