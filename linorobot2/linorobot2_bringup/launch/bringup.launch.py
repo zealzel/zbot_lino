@@ -17,12 +17,10 @@ from launch.actions import DeclareLaunchArgument, IncludeLaunchDescription
 from launch.substitutions import (
     LaunchConfiguration,
     PathJoinSubstitution,
-    PythonExpression,
 )
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch_ros.actions import Node
 from launch_ros.substitutions import FindPackageShare
-from launch.conditions import IfCondition, UnlessCondition
 
 
 def generate_launch_description():
@@ -38,10 +36,6 @@ def generate_launch_description():
         [FindPackageShare("linorobot2_base"), "config", "ekf.yaml"]
     )
 
-    default_robot_launch_path = PathJoinSubstitution(
-        [FindPackageShare("linorobot2_bringup"), "launch", "default_robot.launch.py"]
-    )
-
     return LaunchDescription(
         [
             DeclareLaunchArgument(
@@ -51,13 +45,6 @@ def generate_launch_description():
             ),
             DeclareLaunchArgument(
                 name="joy", default_value="false", description="Use Joystick"
-            ),
-            Node(
-                package="micro_ros_agent",
-                executable="micro_ros_agent",
-                name="micro_ros_agent",
-                output="screen",
-                arguments=["serial", "--dev", LaunchConfiguration("base_serial_port")],
             ),
             Node(
                 package="robot_localization",
@@ -73,11 +60,12 @@ def generate_launch_description():
             IncludeLaunchDescription(
                 PythonLaunchDescriptionSource(sensors_launch_path),
             ),
-            IncludeLaunchDescription(
-                PythonLaunchDescriptionSource(default_robot_launch_path),
-                launch_arguments={
-                    "base_serial_port": LaunchConfiguration("base_serial_port")
-                }.items(),
+            Node(
+                package="micro_ros_agent",
+                executable="micro_ros_agent",
+                name="micro_ros_agent",
+                output="screen",
+                arguments=["serial", "--dev", LaunchConfiguration("base_serial_port")],
             ),
         ]
     )
