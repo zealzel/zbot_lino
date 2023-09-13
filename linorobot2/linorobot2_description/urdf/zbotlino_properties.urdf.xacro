@@ -27,6 +27,7 @@
   <xacro:property name="rear_caster_wheel" value="false" />
 
   <xacro:property name="laser_pose">
+    <!-- zbot lino 1.5 rplidar -->
     <origin xyz="${base_length/2+offset_x-0.085} 0 0.088" rpy="0 0 0"/>
   </xacro:property>
 
