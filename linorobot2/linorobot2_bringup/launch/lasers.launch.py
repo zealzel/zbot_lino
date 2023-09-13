@@ -26,7 +26,8 @@ def get_path(package_name, subpaths):
 
 
 def generate_launch_description():
-    nanoscan3_launch_path = get_path("sick_safetyscanners2", ["launch", "sick_safetyscanners2_lifecycle_launch.py"])
+    # nanoscan3_launch_path = get_path("sick_safetyscanners2", ["launch", "sick_safetyscanners2_lifecycle_launch.py"])
+    nanoscan3_launch_path = get_path("sick_safetyscanners2", ["launch", "sick_safetyscanners2_launch.py"])
 
     ydlidar_config_path = PathJoinSubstitution(
         [FindPackageShare("linorobot2_bringup"), "config", "ydlidar.yaml"]
