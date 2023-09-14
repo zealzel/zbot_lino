@@ -41,11 +41,19 @@ def generate_launch_description():
     nav2_launch_path = get_path("nav2_bringup", ["launch", "bringup_launch.py"])
     rviz_config_path = get_path("nav2_bringup", ["rviz", "nav2_default_view.rviz"])
 
-    nav2_bringup = include_launch_description(nav2_launch_path, launch_arguments={
-        "map": LaunchConfiguration("map"),
-        "use_sim_time": LaunchConfiguration("sim"),
-        "params_file": LaunchConfiguration("params_file"),
-    })
+    # nav2_bringup = include_launch_description(nav2_launch_path, launch_arguments={
+    #     "map": LaunchConfiguration("map"),
+    #     "use_sim_time": LaunchConfiguration("sim"),
+    #     "params_file": LaunchConfiguration("params_file"),
+    # })
+    nav2_bringup = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource(nav2_launch_path),
+        launch_arguments={
+            "map": LaunchConfiguration("map"),
+            "use_sim_time": LaunchConfiguration("sim"),
+            "params_file": LaunchConfiguration("params_file"),
+        }.items()
+    )
     rviz = Node(
         package="rviz2",
         executable="rviz2",
