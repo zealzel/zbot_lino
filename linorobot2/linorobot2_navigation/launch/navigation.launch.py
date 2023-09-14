@@ -1,18 +1,3 @@
-# Copyright (c) 2021 Juan Miguel Jimeno
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http:#www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-
-import os
 from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument, IncludeLaunchDescription
 from launch.substitutions import LaunchConfiguration, PathJoinSubstitution
@@ -27,10 +12,11 @@ def get_path(package_name, subpaths):
 
 
 def include_launch_description(launch_path, **kwargs):
-    launch_args = kwargs.pop('launch_arguments', {})
+    launch_args = kwargs.pop("launch_arguments", {})
     return IncludeLaunchDescription(
         PythonLaunchDescriptionSource(launch_path),
-        launch_arguments=launch_args.items(), **kwargs
+        launch_arguments=launch_args.items(),
+        **kwargs,
     )
 
 
@@ -65,15 +51,12 @@ def generate_launch_description():
             DeclareLaunchArgument(
                 "params_file",
                 default_value=params_file_path,
-                description=(
-                    "Full path to the ROS2 parameters file to use for all launched"
-                    " nodes"
-                ),
+                description="nav2 params file path",
             ),
             DeclareLaunchArgument(
                 name="sim",
                 default_value="false",
-                description="Enable use_sime_time to true",
+                description="Enable use_sim_time to true",
             ),
             DeclareLaunchArgument(
                 name="map",
