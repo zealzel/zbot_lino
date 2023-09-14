@@ -37,7 +37,7 @@ def generate_launch_description():
     gazebo_launch_path = get_path("gazebo_ros", ["launch", "gazebo.launch.py"])
     ekf_config_path = get_path("linorobot2_base", ["config", "ekf.yaml"])
 
-    x_arg = DeclareLaunchArgument("x", default_value="0", description="x position")
+    x_arg = DeclareLaunchArgument("x", default_value="0.5", description="x position")
     y_arg = DeclareLaunchArgument("y", default_value="0", description="y position")
     world_arg = DeclareLaunchArgument(
         "world",
