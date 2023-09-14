@@ -33,8 +33,9 @@ def include_launch_description(launch_path, **kwargs):
 
 
 def generate_launch_description():
+    MAP_NAME = "turtlebot3_world" # "playground"
     package_name = "linorobot2_navigation"
-    MAP_NAME = "playground"
+
     default_map_path = get_path(package_name, ["maps", f"{MAP_NAME}.yaml"])
     params_file_path = get_path(package_name, ["config", "navigation.yaml"])
     nav2_launch_path = get_path("nav2_bringup", ["launch", "bringup_launch.py"])

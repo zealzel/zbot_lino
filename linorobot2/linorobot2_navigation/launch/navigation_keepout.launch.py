@@ -19,8 +19,8 @@ def get_path(package_name, subpaths):
 
 
 def generate_launch_description():
+    MAP_NAME = "turtlebot3_world" # "playground"
     package_name = "linorobot2_navigation"
-    MAP_NAME = "playground"  # change to the name of your own map here
 
     default_map_path = get_path(package_name, ["maps", f"{MAP_NAME}.yaml"])
     costmap_filter_info_launch_path = get_path(package_name, ["launch", "costmap_filter_info.launch.py"])
