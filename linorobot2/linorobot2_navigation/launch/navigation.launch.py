@@ -21,74 +21,61 @@ from launch.conditions import IfCondition
 from launch_ros.substitutions import FindPackageShare
 from launch_ros.actions import Node
 
-MAP_NAME = "playground"  # change to the name of your own map here
+
+def get_path(package_name, subpaths):
+    return PathJoinSubstitution([FindPackageShare(package_name)] + subpaths)
+
+
+def include_launch_description(launch_path, **kwargs):
+    return IncludeLaunchDescription(
+        PythonLaunchDescriptionSource(launch_path), launch_arguments=kwargs.items()
+    )
 
 
 def generate_launch_description():
-    depth_sensor = os.getenv("LINOROBOT2_DEPTH_SENSOR", "")
+    MAP_NAME = "playground"
+    params_file_path = get_path("linorobot2_navigation", ["config", "navigation.yaml"])
+    nav2_launch_path = get_path("nav2_bringup", ["launch", "bringup_launch.py"])
+    rviz_config_path = get_path("linorobot2_navigation", ["rviz", "linorobot2_navigation.rviz"])
+    default_map_path = get_path("linorobot2_navigation", ["maps", f"{MAP_NAME}.yaml"])
 
-    params_arg = DeclareLaunchArgument(
-        "params_file",
-        default_value=PathJoinSubstitution(
-            [
-                FindPackageShare("linorobot2_navigation"),
-                "config",
-                "navigation.yaml",
-            ]
-        ),
-        description=(
-            "Full path to the ROS2 parameters file to use for all launched nodes"
-        ),
+    nav2_bringup = include_launch_description(nav2_launch_path, launch_arguments={
+        "map": LaunchConfiguration("map"),
+        "use_sim_time": LaunchConfiguration("sim"),
+        "params_file": LaunchConfiguration("params_file"),
+    })
+    rviz = Node(
+        package="rviz2",
+        executable="rviz2",
+        name="rviz2",
+        output="screen",
+        arguments=["-d", rviz_config_path],
+        condition=IfCondition(LaunchConfiguration("rviz")),
+        parameters=[{"use_sim_time": LaunchConfiguration("sim")}],
     )
-
-    nav2_launch_path = PathJoinSubstitution(
-        [FindPackageShare("nav2_bringup"), "launch", "bringup_launch.py"]
-    )
-
-    rviz_config_path = PathJoinSubstitution(
-        [
-            FindPackageShare("linorobot2_navigation"),
-            "rviz",
-            "linorobot2_navigation.rviz",
-        ]
-    )
-
-    default_map_path = PathJoinSubstitution(
-        [FindPackageShare("linorobot2_navigation"), "maps", f"{MAP_NAME}.yaml"]
-    )
-
     return LaunchDescription(
         [
-            params_arg,
+            DeclareLaunchArgument(
+                "params_file",
+                default_value=params_file_path,
+                description=(
+                    "Full path to the ROS2 parameters file to use for all launched nodes"
+                ),
+            ),
             DeclareLaunchArgument(
                 name="sim",
                 default_value="false",
                 description="Enable use_sime_time to true",
             ),
             DeclareLaunchArgument(
-                name="rviz", default_value="false", description="Run rviz"
-            ),
-            DeclareLaunchArgument(
                 name="map",
                 default_value=default_map_path,
                 description="Navigation map path",
             ),
-            IncludeLaunchDescription(
-                PythonLaunchDescriptionSource(nav2_launch_path),
-                launch_arguments={
-                    "map": LaunchConfiguration("map"),
-                    "use_sim_time": LaunchConfiguration("sim"),
-                    "params_file": LaunchConfiguration("params_file"),
-                }.items(),
+            DeclareLaunchArgument(
+                name="rviz", default_value="false", description="Run rviz"
             ),
-            Node(
-                package="rviz2",
-                executable="rviz2",
-                name="rviz2",
-                output="screen",
-                arguments=["-d", rviz_config_path],
-                condition=IfCondition(LaunchConfiguration("rviz")),
-                parameters=[{"use_sim_time": LaunchConfiguration("sim")}],
-            ),
+            nav2_bringup,
+            rviz,
         ]
     )
