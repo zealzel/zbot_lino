@@ -27,13 +27,15 @@ def get_path(package_name, subpaths):
 
 
 def include_launch_description(launch_path, **kwargs):
+    launch_args = kwargs.pop('launch_arguments', {})
     return IncludeLaunchDescription(
-        PythonLaunchDescriptionSource(launch_path), launch_arguments=kwargs.items()
+        PythonLaunchDescriptionSource(launch_path),
+        launch_arguments=launch_args.items(), **kwargs
     )
 
 
 def generate_launch_description():
-    MAP_NAME = "turtlebot3_world" # "playground"
+    MAP_NAME = "turtlebot3_world"  # "playground"
     package_name = "linorobot2_navigation"
 
     default_map_path = get_path(package_name, ["maps", f"{MAP_NAME}.yaml"])
@@ -41,18 +43,13 @@ def generate_launch_description():
     nav2_launch_path = get_path("nav2_bringup", ["launch", "bringup_launch.py"])
     rviz_config_path = get_path("nav2_bringup", ["rviz", "nav2_default_view.rviz"])
 
-    # nav2_bringup = include_launch_description(nav2_launch_path, launch_arguments={
-    #     "map": LaunchConfiguration("map"),
-    #     "use_sim_time": LaunchConfiguration("sim"),
-    #     "params_file": LaunchConfiguration("params_file"),
-    # })
-    nav2_bringup = IncludeLaunchDescription(
-        PythonLaunchDescriptionSource(nav2_launch_path),
+    nav2_bringup = include_launch_description(
+        nav2_launch_path,
         launch_arguments={
             "map": LaunchConfiguration("map"),
             "use_sim_time": LaunchConfiguration("sim"),
             "params_file": LaunchConfiguration("params_file"),
-        }.items()
+        },
     )
     rviz = Node(
         package="rviz2",
@@ -69,7 +66,8 @@ def generate_launch_description():
                 "params_file",
                 default_value=params_file_path,
                 description=(
-                    "Full path to the ROS2 parameters file to use for all launched nodes"
+                    "Full path to the ROS2 parameters file to use for all launched"
+                    " nodes"
                 ),
             ),
             DeclareLaunchArgument(
