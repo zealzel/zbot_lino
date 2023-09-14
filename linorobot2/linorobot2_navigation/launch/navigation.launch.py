@@ -33,11 +33,12 @@ def include_launch_description(launch_path, **kwargs):
 
 
 def generate_launch_description():
+    package_name = "linorobot2_navigation"
     MAP_NAME = "playground"
-    params_file_path = get_path("linorobot2_navigation", ["config", "navigation.yaml"])
+    default_map_path = get_path(package_name, ["maps", f"{MAP_NAME}.yaml"])
+    params_file_path = get_path(package_name, ["config", "navigation.yaml"])
     nav2_launch_path = get_path("nav2_bringup", ["launch", "bringup_launch.py"])
-    rviz_config_path = get_path("linorobot2_navigation", ["rviz", "linorobot2_navigation.rviz"])
-    default_map_path = get_path("linorobot2_navigation", ["maps", f"{MAP_NAME}.yaml"])
+    rviz_config_path = get_path("nav2_bringup", ["rviz", "nav2_default_view.rviz"])
 
     nav2_bringup = include_launch_description(nav2_launch_path, launch_arguments={
         "map": LaunchConfiguration("map"),

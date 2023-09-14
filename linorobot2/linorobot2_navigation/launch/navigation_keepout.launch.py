@@ -10,8 +10,6 @@ from launch.actions import (
     TimerAction,
 )
 
-MAP_NAME = "playground"  # change to the name of your own map here
-
 
 def get_path(package_name, subpaths):
     package_share_directory = PathJoinSubstitution(
@@ -22,11 +20,12 @@ def get_path(package_name, subpaths):
 
 def generate_launch_description():
     package_name = "linorobot2_navigation"
+    MAP_NAME = "playground"  # change to the name of your own map here
 
-    nav2_launch_path = get_path("nav2_bringup", ["launch", "bringup_launch.py"])
-    costmap_filter_info_launch_path = get_path(package_name, ["launch", "costmap_filter_info.launch.py"])
-    rviz_config_path = get_path(package_name, ["rviz", "linorobot2_navigation.rviz"])
     default_map_path = get_path(package_name, ["maps", f"{MAP_NAME}.yaml"])
+    costmap_filter_info_launch_path = get_path(package_name, ["launch", "costmap_filter_info.launch.py"])
+    nav2_launch_path = get_path("nav2_bringup", ["launch", "bringup_launch.py"])
+    rviz_config_path = get_path("nav2_bringup", ["rviz", "nav2_default_view.rviz"])
 
     use_sim_arg = DeclareLaunchArgument(
         name="sim",
