@@ -23,19 +23,35 @@ from launch_ros.actions import Node
 from launch_ros.substitutions import FindPackageShare
 
 
+def get_path(package_name, subpaths):
+    return PathJoinSubstitution([FindPackageShare(package_name)] + subpaths)
+
+
+def include_launch_description(launch_path, **kwargs):
+    return IncludeLaunchDescription(
+        PythonLaunchDescriptionSource(launch_path), launch_arguments=kwargs.items()
+    )
+
+
 def generate_launch_description():
-    sensors_launch_path = PathJoinSubstitution(
-        [FindPackageShare("linorobot2_bringup"), "launch", "sensors.launch.py"]
+    sensors_launch_path = get_path("linorobot2_bringup", ["launch", "sensors.launch.py"])
+    description_launch_path = get_path("linorobot2_description", ["launch", "description.launch.py"])
+    ekf_config_path = get_path("linorobot2_base", ["config", "ekf.yaml"])
+    ekf = Node(
+        package="robot_localization",
+        executable="ekf_node",
+        name="ekf_filter_node",
+        output="screen",
+        parameters=[ekf_config_path],
+        remappings=[("odometry/filtered", "odom")],
     )
-
-    description_launch_path = PathJoinSubstitution(
-        [FindPackageShare("linorobot2_description"), "launch", "description.launch.py"]
+    micro_ros_agent = Node(
+        package="micro_ros_agent",
+        executable="micro_ros_agent",
+        name="micro_ros_agent",
+        output="screen",
+        arguments=["serial", "--dev", LaunchConfiguration("base_serial_port")],
     )
-
-    ekf_config_path = PathJoinSubstitution(
-        [FindPackageShare("linorobot2_base"), "config", "ekf.yaml"]
-    )
-
     return LaunchDescription(
         [
             DeclareLaunchArgument(
@@ -46,26 +62,9 @@ def generate_launch_description():
             DeclareLaunchArgument(
                 name="joy", default_value="false", description="Use Joystick"
             ),
-            Node(
-                package="robot_localization",
-                executable="ekf_node",
-                name="ekf_filter_node",
-                output="screen",
-                parameters=[ekf_config_path],
-                remappings=[("odometry/filtered", "odom")],
-            ),
-            IncludeLaunchDescription(
-                PythonLaunchDescriptionSource(description_launch_path)
-            ),
-            IncludeLaunchDescription(
-                PythonLaunchDescriptionSource(sensors_launch_path),
-            ),
-            Node(
-                package="micro_ros_agent",
-                executable="micro_ros_agent",
-                name="micro_ros_agent",
-                output="screen",
-                arguments=["serial", "--dev", LaunchConfiguration("base_serial_port")],
-            ),
+            ekf,
+            include_launch_description(description_launch_path),
+            include_launch_description(sensors_launch_path),
+            micro_ros_agent,
         ]
     )
