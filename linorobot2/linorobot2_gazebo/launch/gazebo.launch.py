@@ -30,7 +30,9 @@ def get_path(package_name, subpaths):
 def generate_launch_description():
     use_sim_time = True
 
-    world_path = get_path("linorobot2_gazebo", ["worlds", "playground.world"])
+    # world_path = get_path("linorobot2_gazebo", ["worlds", f"playground.world"])
+    world_path = get_path("turtlebot3_gazebo", ["worlds", "turtlebot3_world.world"])
+
     description_launch_path = get_path("linorobot2_description", ["launch", "description.launch.py"])
     gazebo_launch_path = get_path("gazebo_ros", ["launch", "gazebo.launch.py"])
     ekf_config_path = get_path("linorobot2_base", ["config", "ekf.yaml"])
