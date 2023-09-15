@@ -221,12 +221,13 @@ controller_server:
         cost_power: 1
         repulsion_weight: 1.5
         critical_weight: 20.0
-        consider_footprint: false
+        #consider_footprint: false
+        consider_footprint: true
         collision_cost: 10000.0
         collision_margin_distance: 0.1
         near_goal_distance: 0.5
-        inflation_radius: 0.55 # (only in Humble)
-        cost_scaling_factor: 3.0 # (only in Humble)
+        inflation_radius: 0.25 # (only in Humble)
+        cost_scaling_factor: 1.0 # (only in Humble)
       PathAlignCritic:
         enabled: true
         cost_power: 1
@@ -269,7 +270,6 @@ local_costmap:
       resolution: 0.05
       robot_radius: 0.22
       footprint: "[[-0.055, -0.14], [-0.055, 0.14], [0.3207, 0.14], [0.3207, -0.14]]"
-      # footprint: "[[-0.055, -0.14], [-0.055, 0.14], [0.495, 0.14], [0.495, -0.14]]"
       footprint_padding: 0.05
       # plugins: ["voxel_layer", "inflation_layer"]
       plugins: ["obstacle_layer", "inflation_layer"]
@@ -277,8 +277,8 @@ local_costmap:
       filters: ["keepout_filter"]
       inflation_layer:
         plugin: "nav2_costmap_2d::InflationLayer"
-        cost_scaling_factor: 10.0
-        inflation_radius: 0.55
+        cost_scaling_factor: 1.0
+        inflation_radius: 0.25
       obstacle_layer:
         plugin: "nav2_costmap_2d::ObstacleLayer"
         enabled: True
@@ -337,7 +337,6 @@ global_costmap:
       use_sim_time: True
       robot_radius: 0.22
       footprint: "[[-0.055, -0.14], [-0.055, 0.14], [0.3207, 0.14], [0.3207, -0.14]]"
-      # footprint: "[[-0.055, -0.14], [-0.055, 0.14], [0.495, 0.14], [0.495, -0.14]]"
       footprint_padding: 0.05
       resolution: 0.05
       track_unknown_space: true
@@ -362,9 +361,8 @@ global_costmap:
         map_subscribe_transient_local: True
       inflation_layer:
         plugin: "nav2_costmap_2d::InflationLayer"
-        cost_scaling_factor: 3.0
-        #inflation_radius: 0.55
-        inflation_radius: 0.35
+        cost_scaling_factor: 1.0
+        inflation_radius: 0.25
       keepout_filter:
         plugin: "nav2_costmap_2d::KeepoutFilter"
         enabled: True
@@ -439,4 +437,3 @@ waypoint_follower:
       plugin: "nav2_waypoint_follower::WaitAtWaypoint"
       enabled: True
       waypoint_pause_duration: 200
-
