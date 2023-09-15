@@ -21,7 +21,7 @@ def get_path(package_name, subpaths):
 
 def generate_launch_description():
     MAP_NAME = "turtlebot3_world" # "playground"
-    robot_base = os.getenv('LINOROBOT2_BASE') # 2wd|4wd|zbotlino
+    robot_base = os.getenv('LINOROBOT2_BASE', 'zbotlino') # 2wd|4wd|zbotlino
     package_name = "linorobot2_navigation"
 
     default_map_path = get_path(package_name, ["maps", f"{MAP_NAME}.yaml"])
