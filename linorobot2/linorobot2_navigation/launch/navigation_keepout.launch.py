@@ -20,9 +20,16 @@ def get_path(package_name, subpaths):
 
 
 def generate_launch_description():
-    MAP_NAME = "turtlebot3_world" # "playground"
-    robot_base = os.getenv('LINOROBOT2_BASE', 'zbotlino') # 2wd|4wd|zbotlino
+    MAP_NAME = "turtlebot3_world"
+
+    # simulation only: 2wd|4wd|macanum|zbotlinolong
+    # real robot: zbotlino(use rplidar)|zbotlinosick1
+    robot_base = os.getenv('LINOROBOT2_BASE', 'zbotlino')
     package_name = "linorobot2_navigation"
+
+    # the footprint of both is the same
+    if robot_base == ["zbotlino", "zbotlinosick1"]:
+        robot_base = "zbotlino"
 
     default_map_path = get_path(package_name, ["maps", f"{MAP_NAME}.yaml"])
     params_file_path = get_path(package_name, ["config", robot_base, "navigation_keepout.yaml"])
