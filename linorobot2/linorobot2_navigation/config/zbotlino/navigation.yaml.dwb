@@ -192,13 +192,30 @@ local_costmap:
       height: 3
       resolution: 0.05
       robot_radius: 0.22
-      # footprint: "[[-0.055, -0.14], [-0.055, 0.14], [0.3207, 0.14], [0.3207, -0.14]]"
-      footprint: "[[-0.055, -0.14], [-0.055, 0.14], [0.545, 0.14], [0.545, -0.14]]"
-      plugins: ["voxel_layer", "inflation_layer"]
+      footprint: "[[-0.055, -0.14], [-0.055, 0.14], [0.3207, 0.14], [0.3207, -0.14]]"
+      # footprint: "[[-0.055, -0.14], [-0.055, 0.14], [0.495, 0.14], [0.495, -0.14]]"
+      footprint_padding: 0.05
+      # plugins: ["voxel_layer", "inflation_layer"]
+      plugins: ["obstacle_layer", "inflation_layer"]
+      # plugins: ["voxel_layer", "obstacle_layer", "inflation_layer"]
       inflation_layer:
         plugin: "nav2_costmap_2d::InflationLayer"
-        cost_scaling_factor: 3.0
+        cost_scaling_factor: 10.0
         inflation_radius: 0.55
+      obstacle_layer:
+        plugin: "nav2_costmap_2d::ObstacleLayer"
+        enabled: True
+        observation_sources: scan
+        scan:
+          topic: /scan
+          max_obstacle_height: 2.0
+          clearing: True
+          marking: True
+          data_type: "LaserScan"
+          raytrace_max_range: 3.0
+          raytrace_min_range: 0.0
+          obstacle_max_range: 2.5
+          obstacle_min_range: 0.0
       voxel_layer:
         plugin: "nav2_costmap_2d::VoxelLayer"
         enabled: True
@@ -233,8 +250,9 @@ global_costmap:
       robot_base_frame: base_link
       use_sim_time: True
       robot_radius: 0.22
-      # footprint: "[[-0.055, -0.14], [-0.055, 0.14], [0.3207, 0.14], [0.3207, -0.14]]"
-      footprint: "[[-0.055, -0.14], [-0.055, 0.14], [0.545, 0.14], [0.545, -0.14]]"
+      footprint: "[[-0.055, -0.14], [-0.055, 0.14], [0.3207, 0.14], [0.3207, -0.14]]"
+      # footprint: "[[-0.055, -0.14], [-0.055, 0.14], [0.495, 0.14], [0.495, -0.14]]"
+      footprint_padding: 0.05
       resolution: 0.05
       track_unknown_space: true
       plugins: ["static_layer", "obstacle_layer", "inflation_layer"]
@@ -257,7 +275,7 @@ global_costmap:
         map_subscribe_transient_local: True
       inflation_layer:
         plugin: "nav2_costmap_2d::InflationLayer"
-        cost_scaling_factor: 3.0
+        cost_scaling_factor: 10.0
         inflation_radius: 0.55
       always_send_full_costmap: True
 

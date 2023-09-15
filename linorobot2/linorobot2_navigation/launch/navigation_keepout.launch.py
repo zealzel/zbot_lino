@@ -20,9 +20,11 @@ def get_path(package_name, subpaths):
 
 def generate_launch_description():
     MAP_NAME = "turtlebot3_world" # "playground"
+    robot_base = os.getenv('LINOROBOT2_BASE') # 2wd|4wd|zbotlino
     package_name = "linorobot2_navigation"
 
     default_map_path = get_path(package_name, ["maps", f"{MAP_NAME}.yaml"])
+    params_file_path = get_path(package_name, ["config", robot_base, "navigation.yaml"])
     costmap_filter_info_launch_path = get_path(package_name, ["launch", "costmap_filter_info.launch.py"])
     nav2_launch_path = get_path("nav2_bringup", ["launch", "bringup_launch.py"])
     rviz_config_path = get_path("nav2_bringup", ["rviz", "nav2_default_view.rviz"])
@@ -37,7 +39,7 @@ def generate_launch_description():
     )
     params_arg = DeclareLaunchArgument(
         "params_file",
-        default_value=get_path(package_name, ["config", "navigation_keepout.yaml"]),
+        default_value=params_file_path,
         description=(
             "Full path to the ROS2 parameters file to use for all launched nodes"
         ),
@@ -57,6 +59,7 @@ def generate_launch_description():
         default_value=default_map_path,
         description="Navigation map path",
     )
+
     costmap_filter_info = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(costmap_filter_info_launch_path),
         launch_arguments={

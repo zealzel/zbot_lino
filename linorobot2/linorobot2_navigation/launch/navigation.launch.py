@@ -22,10 +22,11 @@ def include_launch_description(launch_path, **kwargs):
 
 def generate_launch_description():
     MAP_NAME = "turtlebot3_world"  # "playground"
+    robot_base = os.getenv('LINOROBOT2_BASE', 'zbotlino') # 2wd|4wd|zbotlino
     package_name = "linorobot2_navigation"
 
     default_map_path = get_path(package_name, ["maps", f"{MAP_NAME}.yaml"])
-    params_file_path = get_path(package_name, ["config", "navigation.yaml"])
+    params_file_path = get_path(package_name, ["config", robot_base, "navigation.yaml"])
     nav2_launch_path = get_path("nav2_bringup", ["launch", "bringup_launch.py"])
     rviz_config_path = get_path("nav2_bringup", ["rviz", "nav2_default_view.rviz"])
 

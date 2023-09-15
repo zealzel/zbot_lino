@@ -192,7 +192,7 @@ controller_server:
         collision_margin_distance: 0.1
         near_goal_distance: 0.5
         inflation_radius: 0.55 # (only in Humble)
-        cost_scaling_factor: 3.0 # (only in Humble)
+        cost_scaling_factor: 5.0 # (only in Humble)
       PathAlignCritic:
         enabled: true
         cost_power: 1
@@ -230,13 +230,30 @@ local_costmap:
       height: 3
       resolution: 0.05
       robot_radius: 0.22
-      # footprint: "[[-0.055, -0.14], [-0.055, 0.14], [0.3207, 0.14], [0.3207, -0.14]]"
-      footprint: "[[-0.055, -0.14], [-0.055, 0.14], [0.545, 0.14], [0.545, -0.14]]"
-      plugins: ["voxel_layer", "inflation_layer"]
+      footprint: "[[-0.055, -0.14], [-0.055, 0.14], [0.3207, 0.14], [0.3207, -0.14]]"
+      # footprint: "[[-0.055, -0.14], [-0.055, 0.14], [0.495, 0.14], [0.495, -0.14]]"
+      footprint_padding: 0.05
+      # plugins: ["voxel_layer", "inflation_layer"]
+      plugins: ["obstacle_layer", "inflation_layer"]
+      # plugins: ["voxel_layer", "obstacle_layer", "inflation_layer"]
       inflation_layer:
         plugin: "nav2_costmap_2d::InflationLayer"
-        cost_scaling_factor: 3.0
+        cost_scaling_factor: 10.0
         inflation_radius: 0.55
+      obstacle_layer:
+        plugin: "nav2_costmap_2d::ObstacleLayer"
+        enabled: True
+        observation_sources: scan
+        scan:
+          topic: /scan
+          max_obstacle_height: 2.0
+          clearing: True
+          marking: True
+          data_type: "LaserScan"
+          raytrace_max_range: 3.0
+          raytrace_min_range: 0.0
+          obstacle_max_range: 2.5
+          obstacle_min_range: 0.0
       voxel_layer:
         plugin: "nav2_costmap_2d::VoxelLayer"
         enabled: True
@@ -271,8 +288,9 @@ global_costmap:
       robot_base_frame: base_link
       use_sim_time: True
       robot_radius: 0.22
-      # footprint: "[[-0.055, -0.14], [-0.055, 0.14], [0.3207, 0.14], [0.3207, -0.14]]"
-      footprint: "[[-0.055, -0.14], [-0.055, 0.14], [0.545, 0.14], [0.545, -0.14]]"
+      footprint: "[[-0.055, -0.14], [-0.055, 0.14], [0.3207, 0.14], [0.3207, -0.14]]"
+      # footprint: "[[-0.055, -0.14], [-0.055, 0.14], [0.495, 0.14], [0.495, -0.14]]"
+      footprint_padding: 0.05
       resolution: 0.05
       track_unknown_space: true
       plugins: ["static_layer", "obstacle_layer", "inflation_layer"]
@@ -295,7 +313,7 @@ global_costmap:
         map_subscribe_transient_local: True
       inflation_layer:
         plugin: "nav2_costmap_2d::InflationLayer"
-        cost_scaling_factor: 3.0
+        cost_scaling_factor: 10.0
         inflation_radius: 0.55
       always_send_full_costmap: True
 
@@ -323,7 +341,35 @@ planner_server:
       plugin: "nav2_navfn_planner/NavfnPlanner"
       tolerance: 0.5
       use_astar: false
-      allow_unknown: true
+    # GridBased:
+    #   plugin: "nav2_smac_planner/SmacPlannerHybrid"
+    #   downsample_costmap: false           # whether or not to downsample the map
+    #   downsampling_factor: 1              # multiplier for the resolution of the costmap layer (e.g. 2 on a 5cm costmap would be 10cm)
+    #   tolerance: 0.25                     # dist-to-goal heuristic cost (distance) for valid tolerance endpoints if exact goal cannot be found.
+    #   allow_unknown: true                 # allow traveling in unknown space
+    #   max_iterations: 1000000             # maximum total iterations to search for before failing (in case unreachable), set to -1 to disable
+    #   max_on_approach_iterations: 1000    # Maximum number of iterations after within tolerances to continue to try to find exact solution
+    #   max_planning_time: 5.0              # max time in s for planner to plan, smooth
+    #   motion_model_for_search: "REEDS_SHEPP"    # Hybrid-A* Dubin, Redds-Shepp
+    #   angle_quantization_bins: 72         # Number of angle bins for search
+    #   analytic_expansion_ratio: 3.5       # The ratio to attempt analytic expansions during search for final approach.
+    #   analytic_expansion_max_length: 3.0  # For Hybrid/Lattice nodes: The maximum length of the analytic expansion to be considered valid to prevent unsafe shortcutting
+    #   minimum_turning_radius: 0.40        # minimum turning radius in m of path / vehicle
+    #   reverse_penalty: 2.0                # Penalty to apply if motion is reversing, must be => 1
+    #   change_penalty: 0.0                 # Penalty to apply if motion is changing directions (L to R), must be >= 0
+    #   non_straight_penalty: 1.2           # Penalty to apply if motion is non-straight, must be => 1
+    #   cost_penalty: 2.0                   # Penalty to apply to higher cost areas when adding into the obstacle map dynamic programming distance expansion heuristic. This drives the robot more towards the center of passages. A value between 1.3 - 3.5 is reasonable.
+    #   retrospective_penalty: 0.015
+    #   lookup_table_size: 20.0             # Size of the dubin/reeds-sheep distance window to cache, in meters.
+    #   cache_obstacle_heuristic: false     # Cache the obstacle map dynamic programming distance expansion heuristic between subsiquent replannings of the same goal location. Dramatically speeds up replanning performance (40x) if costmap is largely static.
+    #   smooth_path: True                   # If true, does a simple and quick smoothing post-processing to the path
+    #   smoother:
+    #     max_iterations: 1000
+    #     w_smooth: 0.3
+    #     w_data: 0.2
+    #     tolerance: 1.0e-10
+    #     do_refinement: true
+    #     refinement_num: 2
 
 smoother_server:
   ros__parameters:
@@ -389,3 +435,4 @@ velocity_smoother:
     odom_duration: 0.1
     deadband_velocity: [0.0, 0.0, 0.0]
     velocity_timeout: 1.0
+
