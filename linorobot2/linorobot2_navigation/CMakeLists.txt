@@ -4,7 +4,7 @@ project(linorobot2_navigation)
 find_package(ament_cmake REQUIRED)
 
 install(
-  DIRECTORY launch rviz config maps params
+  DIRECTORY launch rviz config maps params masks
   DESTINATION share/${PROJECT_NAME}
 )
 
