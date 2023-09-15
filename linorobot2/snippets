@@ -1,6 +1,7 @@
 
 # === simulation ===
 ros2 launch linorobot2_gazebo gazebo.launch.py # default world: turtlebot3_world
+
 # verbose
 ros2 launch linorobot2_gazebo gazebo.launch.py \
     world:=$(ros2 pkg prefix turtlebot3_gazebo)/share/turtlebot3_gazebo/worlds/turtlebot3_world.world x:=0.5
@@ -10,18 +11,23 @@ ros2 launch linorobot2_gazebo gazebo.launch.py \
 # === slam mapping ===
 ros2 launch linorobot2_navigation slam.launch.py
 
+
 # === save the map ===
 ros2 run nav2_map_server map_saver_cli -f mymap # pgm/yaml
 ros2 service call /slam_toolbox/serialize_map slam_toolbox/srv/SerializePoseGraph "filename: '$HOME/maps/mymap'" # serialized map for continuous mapping
 
+
 # === navigation ===
 ros2 launch linorobot2_navigation navigation.launch.py sim:=true rviz:=true
+
 # verbose
 ros2 launch linorobot2_navigation navigation.launch.py sim:=true rviz:true \
     map:=/opt/ros/humble/share/turtlebot3_navigation2/map/map.yaml
 
+
 # === defined-route navigation ===
 ros2 launch linorobot2_navigation navigation_keepout.launch.py sim:=true rviz:=true
+
 # verbose
 ros2 launch linorobot2_navigation navigation_keepout.launch.py sim:=true rviz:=true \
     map:=/opt/ros/humble/share/turtlebot3_navigation2/map/map.yaml \
