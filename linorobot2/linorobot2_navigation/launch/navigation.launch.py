@@ -26,6 +26,10 @@ def generate_launch_description():
     robot_base = os.getenv('LINOROBOT2_BASE', 'zbotlino') # 2wd|4wd|zbotlino
     package_name = "linorobot2_navigation"
 
+    # the footprint of both is the same
+    if robot_base == ["zbotlino", "zbotlinosick1"]:
+        robot_base = "zbotlino"
+
     default_map_path = get_path(package_name, ["maps", f"{MAP_NAME}.yaml"])
     params_file_path = get_path(package_name, ["config", robot_base, "navigation.yaml"])
     nav2_launch_path = get_path("nav2_bringup", ["launch", "bringup_launch.py"])
