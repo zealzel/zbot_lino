@@ -25,7 +25,7 @@ def generate_launch_description():
     package_name = "linorobot2_navigation"
 
     default_map_path = get_path(package_name, ["maps", f"{MAP_NAME}.yaml"])
-    params_file_path = get_path(package_name, ["config", robot_base, "navigation.yaml"])
+    params_file_path = get_path(package_name, ["config", robot_base, "navigation_keepout.yaml"])
     costmap_filter_info_launch_path = get_path(package_name, ["launch", "costmap_filter_info.launch.py"])
     nav2_launch_path = get_path("nav2_bringup", ["launch", "bringup_launch.py"])
     rviz_config_path = get_path("nav2_bringup", ["rviz", "nav2_default_view.rviz"])
