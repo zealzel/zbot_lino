@@ -22,6 +22,7 @@
 
 #include <nav_msgs/msg/odometry.h>
 #include <sensor_msgs/msg/imu.h>
+#include <sensor_msgs/msg/range.h>
 #include <geometry_msgs/msg/twist.h>
 #include <geometry_msgs/msg/vector3.h>
 
@@ -31,6 +32,7 @@
 #include "pid.h"
 #include "odometry.h"
 #include "imu.h"
+#include "hcsr04.h"
 #define ENCODER_USE_INTERRUPTS
 #define ENCODER_OPTIMIZE_INTERRUPTS
 #include "encoder.h"
@@ -96,12 +98,14 @@ Kinematics kinematics(
 
 Odometry odometry;
 IMU imu;
+HCSR04 sonic;
 
 void setup()
 {
     pinMode(LED_PIN, OUTPUT);
 
     bool imu_ok = imu.init();
+    bool sonic_ok = sonic.init();
     if(!imu_ok)
     {
         while(1)
