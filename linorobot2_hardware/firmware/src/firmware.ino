@@ -47,10 +47,12 @@
 
 rcl_publisher_t odom_publisher;
 rcl_publisher_t imu_publisher;
+rcl_publisher_t range_publisher;
 rcl_subscription_t twist_subscriber;
 
 nav_msgs__msg__Odometry odom_msg;
 sensor_msgs__msg__Imu imu_msg;
+sensor_msgs__msg__Range range_msg;
 geometry_msgs__msg__Twist twist_msg;
 
 rclc_executor_t executor;
@@ -98,52 +100,71 @@ Kinematics kinematics(
 
 Odometry odometry;
 IMU imu;
-HCSR04 sonic;
+HCSR04 range;
 
 void setup()
 {
     pinMode(LED_PIN, OUTPUT);
 
-    bool imu_ok = imu.init();
-    bool sonic_ok = sonic.init();
-    if(!imu_ok)
-    {
-        while(1)
-        {
-            flashLED(3);
-        }
-    }
+    // bool imu_ok = imu.init();
+    bool sonic_ok = range.init();
+    // if(!imu_ok)
+    // {
+    //     while(1)
+    //     {
+    //         flashLED(3);
+    //     }
+    // }
 
     Serial.begin(115200);
     set_microros_serial_transports(Serial);
+
+    createEntitiesTest();
 }
 
 void loop() {
-    switch (state)
+    // state = (true == createEntities()) ? AGENT_CONNECTED : WAITING_AGENT;
+    // createEntitiesTest();
+    rclc_executor_spin_some(&executor, RCL_MS_TO_NS(100));
+}
+
+// void loop() {
+//     switch (state)
+//     {
+//         case WAITING_AGENT:
+//             EXECUTE_EVERY_N_MS(500, state = (RMW_RET_OK == rmw_uros_ping_agent(100, 1)) ? AGENT_AVAILABLE : WAITING_AGENT;);
+//             break;
+//         case AGENT_AVAILABLE:
+//             // state = (true == createEntities()) ? AGENT_CONNECTED : WAITING_AGENT;
+//             state = (true == createEntitiesTest()) ? AGENT_CONNECTED : WAITING_AGENT;
+//             if (state == WAITING_AGENT)
+//             {
+//                 destroyEntities();
+//             }
+//             break;
+//         case AGENT_CONNECTED:
+//             EXECUTE_EVERY_N_MS(200, state = (RMW_RET_OK == rmw_uros_ping_agent(100, 1)) ? AGENT_CONNECTED : AGENT_DISCONNECTED;);
+//             if (state == AGENT_CONNECTED)
+//             {
+//                 rclc_executor_spin_some(&executor, RCL_MS_TO_NS(100));
+//             }
+//             break;
+//         case AGENT_DISCONNECTED:
+//             destroyEntities();
+//             state = WAITING_AGENT;
+//             break;
+//         default:
+//             break;
+//     }
+// }
+
+void controlCallbackTest(rcl_timer_t * timer, int64_t last_call_time)
+{
+    RCLC_UNUSED(last_call_time);
+    if (timer != NULL)
     {
-        case WAITING_AGENT:
-            EXECUTE_EVERY_N_MS(500, state = (RMW_RET_OK == rmw_uros_ping_agent(100, 1)) ? AGENT_AVAILABLE : WAITING_AGENT;);
-            break;
-        case AGENT_AVAILABLE:
-            state = (true == createEntities()) ? AGENT_CONNECTED : WAITING_AGENT;
-            if (state == WAITING_AGENT)
-            {
-                destroyEntities();
-            }
-            break;
-        case AGENT_CONNECTED:
-            EXECUTE_EVERY_N_MS(200, state = (RMW_RET_OK == rmw_uros_ping_agent(100, 1)) ? AGENT_CONNECTED : AGENT_DISCONNECTED;);
-            if (state == AGENT_CONNECTED)
-            {
-                rclc_executor_spin_some(&executor, RCL_MS_TO_NS(100));
-            }
-            break;
-        case AGENT_DISCONNECTED:
-            destroyEntities();
-            state = WAITING_AGENT;
-            break;
-        default:
-            break;
+       // moveBase();
+       publishDataTest();
     }
 }
 
@@ -163,6 +184,39 @@ void twistCallback(const void * msgin)
 
     prev_cmd_time = millis();
 }
+
+
+bool createEntitiesTest()
+{
+    allocator = rcl_get_default_allocator();
+    //create init_options
+    RCCHECK(rclc_support_init(&support, 0, NULL, &allocator));
+    // create node
+    RCCHECK(rclc_node_init_default(&node, "linorobot_base_node", "", &support));
+    // create range publisher
+    RCCHECK(rclc_publisher_init_default(
+        &range_publisher,
+        &node,
+        ROSIDL_GET_MSG_TYPE_SUPPORT(sensor_msgs, msg, Range),
+        "range/data"
+    ));
+    // create timer for actuating the motors at 50 Hz (1000/20)
+    const unsigned int control_timeout = 20;
+    RCCHECK(rclc_timer_init_default(
+        &control_timer,
+        &support,
+        RCL_MS_TO_NS(control_timeout),
+        controlCallbackTest
+    ));
+    RCCHECK(rclc_executor_init(&executor, &support.context, 1, & allocator));
+    RCCHECK(rclc_executor_add_timer(&executor, &control_timer));
+
+    // synchronize time with the agent
+    syncTime();
+    digitalWrite(LED_PIN, HIGH);
+    return true;
+}
+
 
 bool createEntities()
 {
@@ -297,6 +351,15 @@ void moveBase()
         current_vel.linear_y,
         current_vel.angular_z
     );
+}
+
+void publishDataTest()
+{
+    range_msg = range.getData();
+    struct timespec time_stamp = getTime();
+    range_msg.header.stamp.sec = time_stamp.tv_sec;
+    range_msg.header.stamp.nanosec = time_stamp.tv_nsec;
+    RCSOFTCHECK(rcl_publish(&range_publisher, &range_msg, NULL));
 }
 
 void publishData()

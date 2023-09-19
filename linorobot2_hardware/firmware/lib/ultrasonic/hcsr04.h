@@ -12,7 +12,9 @@ class HCSR04
         sensor_msgs__msg__Range range_msg_;
         int trigPin;    // Trigger
         int echoPin;    // Echo
-        long duration, distance_m;
+        float ranges[2];
+        int duration;
+        float distance_m;
     public:
         HCSR04();
         // bool startSensor() = 0;
