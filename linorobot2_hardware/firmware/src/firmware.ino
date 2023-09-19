@@ -25,6 +25,7 @@
 #include <sensor_msgs/msg/range.h>
 #include <geometry_msgs/msg/twist.h>
 #include <geometry_msgs/msg/vector3.h>
+#include <std_msgs/msg/int32.h>
 
 #include "config.h"
 #include "motor.h"
@@ -51,6 +52,7 @@ rcl_publisher_t imu_publisher;
 rcl_publisher_t range1_publisher;
 rcl_publisher_t range2_publisher;
 rcl_subscription_t twist_subscriber;
+rcl_subscription_t custom_subscriber;
 
 nav_msgs__msg__Odometry odom_msg;
 sensor_msgs__msg__Imu imu_msg;
@@ -58,6 +60,7 @@ sensor_msgs__msg__Imu imu_msg;
 sensor_msgs__msg__Range range1_msg;
 sensor_msgs__msg__Range range2_msg;
 geometry_msgs__msg__Twist twist_msg;
+std_msgs__msg__Int32 custom_msg;
 
 rclc_executor_t executor;
 rclc_support_t support;
@@ -196,6 +199,11 @@ void twistCallback(const void * msgin)
     prev_cmd_time = millis();
 }
 
+void motorBrakeCallback(const void * msgin)
+{  
+  const std_msgs__msg__Int32 * msg = (const std_msgs__msg__Int32 *)msgin;
+  digitalWrite(LED_PIN, (msg->data == 0) ? LOW : HIGH);  
+}
 
 bool createEntitiesTest()
 {
@@ -217,6 +225,13 @@ bool createEntitiesTest()
         ROSIDL_GET_MSG_TYPE_SUPPORT(sensor_msgs, msg, Range),
         "range2/data"
     ));
+    // create twist command subscriber
+    RCCHECK(rclc_subscription_init_default(
+        &custom_subscriber,
+        &node,
+        ROSIDL_GET_MSG_TYPE_SUPPORT(std_msgs, msg, Int32),
+        "motor_brake"
+    ));
     // create timer for actuating the motors at 50 Hz (1000/20)
     const unsigned int control_timeout = 20;
     RCCHECK(rclc_timer_init_default(
@@ -225,12 +240,21 @@ bool createEntitiesTest()
         RCL_MS_TO_NS(control_timeout),
         controlCallbackTest
     ));
+    executor = rclc_executor_get_zero_initialized_executor();
     RCCHECK(rclc_executor_init(&executor, &support.context, 2, & allocator));
+    RCCHECK(rclc_executor_add_subscription(
+        &executor,
+        &custom_subscriber,
+        &custom_msg,
+        &motorBrakeCallback,
+        ON_NEW_DATA
+    ));
     RCCHECK(rclc_executor_add_timer(&executor, &control_timer));
 
     // synchronize time with the agent
     syncTime();
     digitalWrite(LED_PIN, HIGH);
+
     return true;
 }
 
