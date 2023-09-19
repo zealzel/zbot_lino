@@ -1,15 +1,16 @@
 #include "hcsr04.h"
 
 
-HCSR04::HCSR04()
+HCSR04::HCSR04(char* link_name)
 {
-    range_msg_.header.frame_id = micro_ros_string_utilities_set(range_msg_.header.frame_id, "sonic1_link");
+    // range_msg_.header.frame_id = micro_ros_string_utilities_set(range_msg_.header.frame_id, "sonic1_link");
+    range_msg_.header.frame_id = micro_ros_string_utilities_set(range_msg_.header.frame_id, link_name);
 }
 
 
-bool HCSR04::init()
+bool HCSR04::init(int trig, int echo)
 {
-    bool sensor_ok = startSensor();
+    bool sensor_ok = startSensor(trig, echo);
     return sensor_ok;
 }
 
@@ -36,10 +37,12 @@ sensor_msgs__msg__Range HCSR04::getData()
     return range_msg_;
 }
 
-bool HCSR04::startSensor()
+bool HCSR04::startSensor(int trig, int echo)
 {
-    trigPin = 22;    // Trigger
-    echoPin = 23;    // Echo
+    // trigPin = 22;    // Trigger
+    // echoPin = 23;    // Echo
+    trigPin = trig;
+    echoPin = echo;
     pinMode(trigPin, OUTPUT);
     pinMode(echoPin, INPUT);
     return true;

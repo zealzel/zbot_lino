@@ -12,15 +12,15 @@ class HCSR04
         sensor_msgs__msg__Range range_msg_;
         int trigPin;    // Trigger
         int echoPin;    // Echo
-        float ranges[2];
         int duration;
         float distance_m;
     public:
-        HCSR04();
-        // bool startSensor() = 0;
-        bool init();
+        HCSR04(char* link_name);
+        // bool init();
+        bool init(int trigPin, int echoPin);
         sensor_msgs__msg__Range getData();
-        bool startSensor();
+        // bool startSensor();
+        bool startSensor(int trigPin, int echoPin);
 };
 
 #endif
