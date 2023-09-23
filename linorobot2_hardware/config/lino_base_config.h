@@ -142,7 +142,8 @@ ROBOT ORIENTATION
 #ifdef USE_BTS7960_MOTOR_DRIVER
 // motor1 is left and motor2 is right
   #define MOTOR1_PWM -1 //DON'T TOUCH THIS! This is just a placeholder
-  #define MOTOR1_IN_A 2
+  // #define MOTOR1_IN_A 2
+  #define MOTOR1_IN_A 4
   #define MOTOR1_IN_B 3
 
   #define MOTOR2_PWM -1 //DON'T TOUCH THIS! This is just a placeholder
