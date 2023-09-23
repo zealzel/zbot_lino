@@ -6,8 +6,10 @@ int echoPin1 = 23;    // Echo
 long duration, cm, inches;
 float distance_m;
 
-int trigPin[2] = {22, 35};
-int echoPin[2] = {23, 36};
+// int trigPin[2] = {22, 35};
+// int echoPin[2] = {23, 36};
+int trigPin[2] = {25, 6};
+int echoPin[2] = {24, 5};
 float ranges[2];
  
 void setup() {

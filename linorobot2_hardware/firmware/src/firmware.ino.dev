@@ -12,10 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// Modified by Kevin Lee (2023/9/22)
-// Based on firmware.ino.1, change pub/sub into two ultrasonic sensor and one motorbrake
-//  - publisher: range1/data, range2/data (worked)
-//  - subscriber: motor_brake (communication worked. real motor_brake logics TBD)
+// Modified by Kevin Lee (dev)
+// plan to do
+// - publish: odometry, imu, range1/data, range2/data
+// - subscribe: twist, motor_brake
 
 #include <Arduino.h>
 #include <micro_ros_platformio.h>

@@ -12,10 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// Modified by Kevin Lee (2023/9/22)
-// Based on firmware.ino.1, change pub/sub into two ultrasonic sensor and one motorbrake
-//  - publisher: range1/data, range2/data (worked)
-//  - subscriber: motor_brake (communication worked. real motor_brake logics TBD)
+// Modified by Kevin Lee (2023)
+// This is the workable codes which follows the original linorobot2 with zbotlino's hardward pin settings
+// - publish: odometry, imu
+// - subscribe: twist
 
 #include <Arduino.h>
 #include <micro_ros_platformio.h>
@@ -28,10 +28,8 @@
 
 #include <nav_msgs/msg/odometry.h>
 #include <sensor_msgs/msg/imu.h>
-#include <sensor_msgs/msg/range.h>
 #include <geometry_msgs/msg/twist.h>
 #include <geometry_msgs/msg/vector3.h>
-#include <std_msgs/msg/int32.h>
 
 #include "config.h"
 #include "motor.h"
@@ -39,7 +37,6 @@
 #include "pid.h"
 #include "odometry.h"
 #include "imu.h"
-#include "hcsr04.h"
 #define ENCODER_USE_INTERRUPTS
 #define ENCODER_OPTIMIZE_INTERRUPTS
 #include "encoder.h"
@@ -54,19 +51,11 @@
 
 rcl_publisher_t odom_publisher;
 rcl_publisher_t imu_publisher;
-// rcl_publisher_t range_publisher;
-rcl_publisher_t range1_publisher;
-rcl_publisher_t range2_publisher;
 rcl_subscription_t twist_subscriber;
-rcl_subscription_t custom_subscriber;
 
 nav_msgs__msg__Odometry odom_msg;
 sensor_msgs__msg__Imu imu_msg;
-// sensor_msgs__msg__Range range_msg;
-sensor_msgs__msg__Range range1_msg;
-sensor_msgs__msg__Range range2_msg;
 geometry_msgs__msg__Twist twist_msg;
-std_msgs__msg__Int32 custom_msg;
 
 rclc_executor_t executor;
 rclc_support_t support;
@@ -113,38 +102,23 @@ Kinematics kinematics(
 
 Odometry odometry;
 IMU imu;
-// HCSR04 range;
-HCSR04 range1("sonic1");
-HCSR04 range2("sonic2");
 
 void setup()
 {
     pinMode(LED_PIN, OUTPUT);
 
-    // bool imu_ok = imu.init();
-    int trigPin1 = 25;
-    int echoPin1 = 24;
-    int trigPin2 = 6;
-    int echoPin2 = 5;
-    bool range1_ok = range1.init(trigPin1, echoPin1);
-    bool range2_ok = range2.init(trigPin2, echoPin2);
-    // if(!imu_ok)
-    // {
-    //     while(1)
-    //     {
-    //         flashLED(3);
-    //     }
-    // }
+    bool imu_ok = imu.init();
+    if(!imu_ok)
+    {
+        while(1)
+        {
+            flashLED(3);
+        }
+    }
 
     Serial.begin(115200);
     set_microros_serial_transports(Serial);
-
-    // createEntitiesTest();
 }
-
-// void loop() {
-//     rclc_executor_spin_some(&executor, RCL_MS_TO_NS(100));
-// }
 
 void loop() {
     switch (state)
@@ -153,8 +127,7 @@ void loop() {
             EXECUTE_EVERY_N_MS(500, state = (RMW_RET_OK == rmw_uros_ping_agent(100, 1)) ? AGENT_AVAILABLE : WAITING_AGENT;);
             break;
         case AGENT_AVAILABLE:
-            // state = (true == createEntities()) ? AGENT_CONNECTED : WAITING_AGENT;
-            state = (true == createEntitiesTest()) ? AGENT_CONNECTED : WAITING_AGENT;
+            state = (true == createEntities()) ? AGENT_CONNECTED : WAITING_AGENT;
             if (state == WAITING_AGENT)
             {
                 destroyEntities();
@@ -176,16 +149,6 @@ void loop() {
     }
 }
 
-void controlCallbackTest(rcl_timer_t * timer, int64_t last_call_time)
-{
-    RCLC_UNUSED(last_call_time);
-    if (timer != NULL)
-    {
-       // moveBase();
-       publishDataTest();
-    }
-}
-
 void controlCallback(rcl_timer_t * timer, int64_t last_call_time)
 {
     RCLC_UNUSED(last_call_time);
@@ -202,68 +165,6 @@ void twistCallback(const void * msgin)
 
     prev_cmd_time = millis();
 }
-
-void motorBrakeCallback(const void * msgin)
-{  
-  // example ros client usage: ros2 topic pub -1 /motor_brake std_msgs/msg/Int32 "{data: 2}"
-  const std_msgs__msg__Int32 * msg = (const std_msgs__msg__Int32 *)msgin;
-  digitalWrite(LED_PIN, (msg->data == 0) ? LOW : HIGH);  
-  fullStop();
-}
-
-bool createEntitiesTest()
-{
-    allocator = rcl_get_default_allocator();
-    //create init_options
-    RCCHECK(rclc_support_init(&support, 0, NULL, &allocator));
-    // create node
-    RCCHECK(rclc_node_init_default(&node, "linorobot_base_node", "", &support));
-    // create range publisher
-    RCCHECK(rclc_publisher_init_default(
-        &range1_publisher,
-        &node,
-        ROSIDL_GET_MSG_TYPE_SUPPORT(sensor_msgs, msg, Range),
-        "range1/data"
-    ));
-    RCCHECK(rclc_publisher_init_default(
-        &range2_publisher,
-        &node,
-        ROSIDL_GET_MSG_TYPE_SUPPORT(sensor_msgs, msg, Range),
-        "range2/data"
-    ));
-    // create twist command subscriber
-    RCCHECK(rclc_subscription_init_default(
-        &custom_subscriber,
-        &node,
-        ROSIDL_GET_MSG_TYPE_SUPPORT(std_msgs, msg, Int32),
-        "motor_brake"
-    ));
-    // create timer for actuating the motors at 50 Hz (1000/20)
-    const unsigned int control_timeout = 20;
-    RCCHECK(rclc_timer_init_default(
-        &control_timer,
-        &support,
-        RCL_MS_TO_NS(control_timeout),
-        controlCallbackTest
-    ));
-    executor = rclc_executor_get_zero_initialized_executor();
-    RCCHECK(rclc_executor_init(&executor, &support.context, 2, & allocator));
-    RCCHECK(rclc_executor_add_subscription(
-        &executor,
-        &custom_subscriber,
-        &custom_msg,
-        &motorBrakeCallback,
-        ON_NEW_DATA
-    ));
-    RCCHECK(rclc_executor_add_timer(&executor, &control_timer));
-
-    // synchronize time with the agent
-    syncTime();
-    digitalWrite(LED_PIN, HIGH);
-
-    return true;
-}
-
 
 bool createEntities()
 {
@@ -327,11 +228,6 @@ bool destroyEntities()
     rcl_publisher_fini(&odom_publisher, &node);
     rcl_publisher_fini(&imu_publisher, &node);
     rcl_subscription_fini(&twist_subscriber, &node);
-    //
-    rcl_publisher_fini(&range1_publisher, &node);
-    rcl_publisher_fini(&range2_publisher, &node);
-    rcl_subscription_fini(&custom_subscriber, &node);
-    //
     rcl_node_fini(&node);
     rcl_timer_fini(&control_timer);
     rclc_executor_fini(&executor);
@@ -405,19 +301,6 @@ void moveBase()
     );
 }
 
-void publishDataTest()
-{
-    range1_msg = range1.getData();
-    range2_msg = range2.getData();
-    struct timespec time_stamp = getTime();
-    range1_msg.header.stamp.sec = time_stamp.tv_sec;
-    range1_msg.header.stamp.nanosec = time_stamp.tv_nsec;
-    range2_msg.header.stamp.sec = time_stamp.tv_sec;
-    range2_msg.header.stamp.nanosec = time_stamp.tv_nsec;
-    RCSOFTCHECK(rcl_publish(&range1_publisher, &range1_msg, NULL));
-    RCSOFTCHECK(rcl_publish(&range2_publisher, &range2_msg, NULL));
-}
-
 void publishData()
 {
     odom_msg = odometry.getData();
@@ -476,3 +359,4 @@ void flashLED(int n_times)
     }
     delay(1000);
 }
+
