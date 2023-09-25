@@ -12,10 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// Modified by Kevin Lee (2023/9/22)
-// Based on firmware.ino.1, change pub/sub into two ultrasonic sensor and one motorbrake
-//  - publisher: range1/data, range2/data (worked)
-//  - subscriber: motor_brake (communication worked. real motor_brake logics TBD)
+// Modified by Kevin Lee (dev)
+// plan to do
+// - publish: odometry, imu, range1/data, range2/data
+// - subscribe: twist, motor_brake
 
 #include <Arduino.h>
 #include <micro_ros_platformio.h>
@@ -128,23 +128,16 @@ void setup()
     int echoPin2 = 5;
     bool range1_ok = range1.init(trigPin1, echoPin1);
     bool range2_ok = range2.init(trigPin2, echoPin2);
-    // if(!imu_ok)
-    // {
-    //     while(1)
-    //     {
-    //         flashLED(3);
-    //     }
-    // }
-
+    if(!imu_ok)
+    {
+        while(1)
+        {
+            flashLED(3);
+        }
+    }
     Serial.begin(115200);
     set_microros_serial_transports(Serial);
-
-    // createEntitiesTest();
 }
-
-// void loop() {
-//     rclc_executor_spin_some(&executor, RCL_MS_TO_NS(100));
-// }
 
 void loop() {
     switch (state)
@@ -476,3 +469,4 @@ void flashLED(int n_times)
     }
     delay(1000);
 }
+
