@@ -1,10 +1,13 @@
 
 # === simulation ===
 ros2 launch linorobot2_gazebo gazebo.launch.py # default world: turtlebot3_world
-
 # verbose
 ros2 launch linorobot2_gazebo gazebo.launch.py \
     world:=$(ros2 pkg prefix turtlebot3_gazebo)/share/turtlebot3_gazebo/worlds/turtlebot3_world.world x:=0.5
+
+# === simulation using rmf's traffic-editor generated world ===
+ros2 launch my_rmf my_sim_lino.launch.py map_name:=fit_office # default world: tb3
+
 
 <<<----------------------------------------------------------------------->>>
 
@@ -24,7 +27,7 @@ ros2 launch linorobot2_navigation navigation.launch.py sim:=true rviz:true \
     map:=/opt/ros/humble/share/turtlebot3_navigation2/map/map.yaml
 
 # === navigation using traffic-editor generated gazebo world & slamed maps ===
-ros2 launch linorobot2_navigation navigation.launch.py sim:=true rviz:=true map_name:=fit_office_res002_0926
+ros2 launch linorobot2_navigation navigation_rmf.launch.py sim:=true rviz:=true map_name:=fit_office_res002_0926
 
 
 # === defined-route navigation ===
