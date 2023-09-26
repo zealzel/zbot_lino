@@ -19,15 +19,16 @@ ros2 service call /slam_toolbox/serialize_map slam_toolbox/srv/SerializePoseGrap
 
 # === navigation ===
 ros2 launch linorobot2_navigation navigation.launch.py sim:=true rviz:=true
-
 # verbose
 ros2 launch linorobot2_navigation navigation.launch.py sim:=true rviz:true \
     map:=/opt/ros/humble/share/turtlebot3_navigation2/map/map.yaml
 
+# === navigation using traffic-editor generated gazebo world & slamed maps ===
+ros2 launch linorobot2_navigation navigation.launch.py sim:=true rviz:=true map_name:=fit_office_res002_0926
+
 
 # === defined-route navigation ===
 ros2 launch linorobot2_navigation navigation_keepout.launch.py sim:=true rviz:=true
-
 # verbose
 ros2 launch linorobot2_navigation navigation_keepout.launch.py sim:=true rviz:=true \
     map:=/opt/ros/humble/share/turtlebot3_navigation2/map/map.yaml \
