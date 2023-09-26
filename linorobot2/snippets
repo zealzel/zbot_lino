@@ -36,3 +36,7 @@ ros2 launch linorobot2_navigation navigation_keepout.launch.py sim:=true rviz:=t
 ros2 launch linorobot2_navigation navigation_keepout.launch.py sim:=true rviz:=true \
     map:=/opt/ros/humble/share/turtlebot3_navigation2/map/map.yaml \
     mask:=$HOME/maps/keepout_mask.yaml
+
+# === defined_route navigation using traffic-editor generated gazebo world & slamed maps ===
+ros2 launch linorobot2_navigation navigation_keepout_rmf.launch.py sim:=true rviz:=true \
+    map_name:=fit_office_res002_0926

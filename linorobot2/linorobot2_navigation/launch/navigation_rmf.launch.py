@@ -49,11 +49,11 @@ def generate_launch_description():
         default_value="false",
         description="Enable use_sim_time to true",
     )
-    maploc = os.path.join(get_package_share_directory(package_name), 'maps')
     rviz_arg = DeclareLaunchArgument(
         name="rviz", default_value="false", description="Run rviz"
     )
     map_name_arg = DeclareLaunchArgument("map_name", default_value=MAP_NAME)
+    maploc = os.path.join(get_package_share_directory(package_name), 'maps')
     map_arg = DeclareLaunchArgument(
         name="map",
         default_value=[f'{maploc}/', LaunchConfiguration("map_name"), ".yaml"],
