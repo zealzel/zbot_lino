@@ -6,7 +6,7 @@ ros2 launch linorobot2_gazebo gazebo.launch.py \
     world:=$(ros2 pkg prefix turtlebot3_gazebo)/share/turtlebot3_gazebo/worlds/turtlebot3_world.world x:=0.5
 
 # === simulation using rmf's traffic-editor generated world ===
-ros2 launch linorobot2_gazebo sim.launch.py map_name:=fit_office # default world: tb3
+ros2 launch linorobot2_gazebo sim.launch.py map_name:=fit_office # (default map_name: fit_office)
 
 
 <<<----------------------------------------------------------------------->>>
