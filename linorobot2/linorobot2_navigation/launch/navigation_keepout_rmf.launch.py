@@ -30,7 +30,7 @@ def include_launch_description(launch_path, **kwargs):
 
 
 def generate_launch_description():
-    MAP_NAME = "turtlebot3_world"
+    MAP_NAME = "fit_office_res002_0926"
 
     # simulation only: 2wd|4wd|macanum|zbotlinolong
     # real robot: zbotlino(use rplidar)|zbotlinosick1

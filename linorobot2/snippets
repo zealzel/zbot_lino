@@ -39,4 +39,4 @@ ros2 launch linorobot2_navigation navigation_keepout.launch.py sim:=true rviz:=t
 
 # === defined_route navigation using traffic-editor generated gazebo world & slamed maps & homebrewed masks ===
 ros2 launch linorobot2_navigation navigation_keepout_rmf.launch.py sim:=true rviz:=true \
-    map_name:=fit_office_res002_0926
+    map_name:=fit_office_res002_0926 # (default: fit_office_res002_0926)

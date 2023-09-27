@@ -14,7 +14,7 @@ from launch_ros.substitutions import FindPackageShare
 def generate_launch_description():
     use_sim_time = True
     map_name_arg = DeclareLaunchArgument(
-        "map_name", default_value="tb3", description="Name of the map"
+        "map_name", default_value="fit_office", description="Name of the map"
     )
     headless_arg = DeclareLaunchArgument(
         "headless", default_value="false", description="Headless mode"
