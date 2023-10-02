@@ -34,4 +34,11 @@
   <xacro:property name="depth_sensor_pose">
     <origin xyz="${0.2+offset_x} 0.0 0.045" rpy="0 0 0"/>
   </xacro:property>
+
+  <xacro:property name="range1_sensor_pose">
+    <origin xyz="${offset_x+base_length/2-0.02/2} 0.0 ${-base_height/2-0.01/2}" rpy="0 0 0"/>
+  </xacro:property>
+  <xacro:property name="range2_sensor_pose">
+    <origin xyz="${-0.055+0.02/2} 0.0 ${-base_height/2-0.01/2}" rpy="0 0 3.1415"/>
+  </xacro:property>
 </robot>

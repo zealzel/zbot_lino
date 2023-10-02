@@ -1,0 +1,87 @@
+<robot xmlns:xacro="http://ros.org/wiki/xacro">
+  <xacro:property name="M_PI" value="3.1415926535897931" />
+  <xacro:macro name="range_sensor" params="*origin update_rate ray_count min_angle max_angle min_range max_range frame_id topic_name">
+    <link name="${frame_id}">
+      <visual>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <box size="0.02 0.05 -0.01"/>
+        </geometry>
+        <material name="red">
+          <color rgba="0.416 0.051 0.047 1.0"/>
+        </material>
+      </visual>
+      
+      <collision>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <box size="0.02 0.05 -0.01"/>
+        </geometry>
+      </collision>
+
+      <inertial>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <mass value="0.135"/>
+        <inertia ixx="${(1/12) * 0.135 * ((0.124  * 0.124)  + (0.030 * 0.030))}" ixy="0.0" ixz="0.0"
+                 iyy="${(1/12) * 0.135 * ((0.030 * 0.030) + (0.030 * 0.030))}" iyz="0.0"
+                 izz="${(1/12) * 0.135 * ((0.030 * 0.030) + (0.124  * 0.124))}"/>
+      </inertial>
+    </link>
+
+    <gazebo reference="${frame_id}">
+      <visual>
+        <material>
+          <ambient>0.003 0.639 0.223 1.0</ambient>
+          <diffuse>0.003 0.639 0.223 1.0</diffuse>
+          <specular>0.003 0.639 0.223 1.0</specular>
+          <emissive>0.0 0.0 0.0 0.0</emissive>
+        </material>
+      </visual>
+    </gazebo>
+
+    <joint name="${frame_id}_to_base_link" type="fixed">
+      <parent link="base_link"/>
+      <child link="${frame_id}"/>
+      <xacro:insert_block name="origin" />
+    </joint>
+    <gazebo reference="${frame_id}">
+      <sensor type="ray" name="${frame_id}_range_sensor">
+        <always_on>true</always_on>
+        <update_rate>${update_rate}</update_rate>
+        <pose>0 0 0 0 0 0</pose>
+        <visualize>false</visualize>
+        <ray>
+          <scan>
+            <horizontal>
+              <samples>${ray_count}</samples>
+              <resolution>1</resolution>
+              <min_angle>${min_angle}</min_angle>
+              <max_angle>${max_angle}</max_angle>
+            </horizontal>
+          </scan>
+          <range>
+            <min>${min_range}</min>
+            <max>${max_range}</max>
+            <resolution>0.05</resolution>
+          </range>
+        </ray>
+        <plugin filename="libgazebo_ros_range.so" name="gazebo_ros_range">
+            <ros>
+              <remapping>~/out:=${topic_name}</remapping>
+            </ros>
+            <output_type>sensor_msgs/Range</output_type>
+            <topicName>${topic_name}</topicName>
+            <frameName>${frame_id}</frameName>
+            <gaussianNoise>0.000</gaussianNoise>
+            <alwaysOn>true</alwaysOn>.
+            <updateRate>10</updateRate>
+            <radiation>infrared</radiation>
+            <fov>0.20</fov>
+            <visualize>true</visualize>
+        </plugin>
+      </sensor>
+    </gazebo>
+
+  </xacro:macro>
+</robot>
+

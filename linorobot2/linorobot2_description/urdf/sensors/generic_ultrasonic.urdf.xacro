@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://ros.org/wiki/xacro">
+  <xacro:include filename="$(find linorobot2_description)/urdf/sensors/ultrasonic.urdf.xacro" />
+
+  <xacro:macro name="range1" params="*origin">
+    <xacro:range_sensor
+      update_rate="10"
+      ray_count="10"
+      min_angle="-0.174533"
+      max_angle="0.174533"
+      min_range="0.05"
+      max_range="0.5"
+      frame_id="sonic1"
+      topic_name="range1/data"
+    >
+      <xacro:insert_block name="origin" />
+    </xacro:range_sensor>
+  </xacro:macro>
+  <xacro:macro name="range2" params="*origin">
+    <xacro:range_sensor
+      update_rate="10"
+      ray_count="10"
+      min_angle="-0.174533"
+      max_angle="0.174533"
+      min_range="0.05"
+      max_range="0.5"
+      frame_id="sonic2"
+      topic_name="range2/data"
+    >
+      <xacro:insert_block name="origin" />
+    </xacro:range_sensor>
+  </xacro:macro>
+
+</robot>
