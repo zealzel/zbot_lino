@@ -30,7 +30,7 @@ def generate_launch_description():
     package_name = "linorobot2_navigation"
 
     # the footprint of both is the same
-    if robot_base == ["zbotlino", "zbotlinosick1"]:
+    if robot_base in ["zbotlino", "zbotlinosick1"]:
         robot_base = "zbotlino"
 
     default_map_path = get_path(package_name, ["maps", f"{MAP_NAME}.yaml"])
