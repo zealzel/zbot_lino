@@ -29,7 +29,7 @@ def generate_launch_description():
     robot_base = os.getenv("LINOROBOT2_BASE", "zbotlino")
 
     # the footprint of both is the same
-    if robot_base == ["zbotlino", "zbotlinosick1"]:
+    if robot_base in ["zbotlino", "zbotlinosick1"]:
         robot_base = "zbotlino"
 
     urdf_path = get_path(

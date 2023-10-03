@@ -228,14 +228,30 @@ local_costmap:
       rolling_window: true
       width: 3
       height: 3
-      resolution: 0.05
+      # resolution should be the same with the slam map resolution
+      resolution: 0.02
       robot_radius: 0.22
       footprint: "[[-0.055, -0.14], [-0.055, 0.14], [0.3207, 0.14], [0.3207, -0.14]]"
       # footprint: "[[-0.055, -0.14], [-0.055, 0.14], [0.495, 0.14], [0.495, -0.14]]"
       footprint_padding: 0.05
-      # plugins: ["voxel_layer", "inflation_layer"]
-      plugins: ["obstacle_layer", "inflation_layer"]
-      # plugins: ["voxel_layer", "obstacle_layer", "inflation_layer"]
+      # not working
+      # plugins: ["obstacle_layer", "inflation_layer", "range_layer"]
+      # plugins array order matters!
+      # LaserScan working
+      # plugins: ["obstacle_layer", "inflation_layer"]
+      # Range working
+      # plugins: ["range_layer", "inflation_layer"]
+      # LaserScan & Range both working
+      plugins: ["range_layer", "obstacle_layer", "inflation_layer"]
+      range_layer:
+        plugin: "nav2_costmap_2d::RangeSensorLayer"
+        topics: ["/range1_sensor", "/range2_sensor"]
+        inflate_cone: 1.0
+        #clear_threshold: 0.2
+        #mark_threshold: 0.8
+        clear_threshold: 0.2
+        mark_threshold: 0.8
+        clear_on_max_reading: false
       inflation_layer:
         plugin: "nav2_costmap_2d::InflationLayer"
         cost_scaling_factor: 10.0
@@ -291,9 +307,20 @@ global_costmap:
       footprint: "[[-0.055, -0.14], [-0.055, 0.14], [0.3207, 0.14], [0.3207, -0.14]]"
       # footprint: "[[-0.055, -0.14], [-0.055, 0.14], [0.495, 0.14], [0.495, -0.14]]"
       footprint_padding: 0.05
-      resolution: 0.05
+      # resolution should be the same with the slam map resolution
+      resolution: 0.02
       track_unknown_space: true
       plugins: ["static_layer", "obstacle_layer", "inflation_layer"]
+      #plugins: ["static_layer", "obstacle_layer", "range_layer", "inflation_layer"]
+      range_layer:
+        plugin: "nav2_costmap_2d::RangeSensorLayer"
+        topics: ["/range1_sensor", "/range2_sensor"]
+        inflate_cone: 1.0
+        #clear_threshold: 0.2
+        #mark_threshold: 0.8
+        clear_threshold: 0.2
+        mark_threshold: 0.8
+        clear_on_max_reading: false
       obstacle_layer:
         plugin: "nav2_costmap_2d::ObstacleLayer"
         enabled: True
@@ -435,4 +462,3 @@ velocity_smoother:
     odom_duration: 0.1
     deadband_velocity: [0.0, 0.0, 0.0]
     velocity_timeout: 1.0
-

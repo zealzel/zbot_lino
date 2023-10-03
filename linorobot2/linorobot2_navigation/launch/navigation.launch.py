@@ -55,6 +55,13 @@ def generate_launch_description():
         condition=IfCondition(LaunchConfiguration("rviz")),
         parameters=[{"use_sim_time": LaunchConfiguration("sim")}],
     )
+    # Temporary node to republish the range1/data & range2/data to range1_sensor & range2_sensor
+    uros_repub = Node(
+        package=package_name,
+        executable="repub_node",
+        name="repub_node",
+        output="screen",
+    )
     return LaunchDescription(
         [
             DeclareLaunchArgument(
@@ -77,5 +84,6 @@ def generate_launch_description():
             ),
             nav2_bringup,
             rviz,
+            uros_repub,
         ]
     )
