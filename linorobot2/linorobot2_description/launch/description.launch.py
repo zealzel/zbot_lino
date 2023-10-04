@@ -26,11 +26,7 @@ def generate_launch_description():
 
     # simulation only: 2wd|4wd|macanum|zbotlinolong
     # real robot: zbotlino(use rplidar)|zbotlinosick1
-    robot_base = os.getenv("LINOROBOT2_BASE", "zbotlino")
-
-    # the footprint of both is the same
-    if robot_base in ["zbotlino", "zbotlinosick1"]:
-        robot_base = "zbotlino"
+    robot_base = os.getenv("LINOROBOT2_BASE", "zbotlinosick1")
 
     urdf_path = get_path(
         "linorobot2_description", ["urdf", "robots", f"{robot_base}.urdf.xacro"]
