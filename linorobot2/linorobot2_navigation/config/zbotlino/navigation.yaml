@@ -191,8 +191,8 @@ controller_server:
         collision_cost: 10000.0
         collision_margin_distance: 0.1
         near_goal_distance: 0.5
-        inflation_radius: 0.55 # (only in Humble)
-        cost_scaling_factor: 5.0 # (only in Humble)
+        inflation_radius: 0.25 # (only in Humble)
+        cost_scaling_factor: 3.0 # (only in Humble)
       PathAlignCritic:
         enabled: true
         cost_power: 1
@@ -254,8 +254,8 @@ local_costmap:
         clear_on_max_reading: false
       inflation_layer:
         plugin: "nav2_costmap_2d::InflationLayer"
-        cost_scaling_factor: 10.0
-        inflation_radius: 0.55
+        cost_scaling_factor: 3.0
+        inflation_radius: 0.25
       obstacle_layer:
         plugin: "nav2_costmap_2d::ObstacleLayer"
         enabled: True
@@ -340,8 +340,8 @@ global_costmap:
         map_subscribe_transient_local: True
       inflation_layer:
         plugin: "nav2_costmap_2d::InflationLayer"
-        cost_scaling_factor: 10.0
-        inflation_radius: 0.55
+        cost_scaling_factor: 3.0
+        inflation_radius: 0.25
       always_send_full_costmap: True
 
 map_server:
