@@ -29,8 +29,8 @@ sensor_msgs__msg__Range HCSR04::getData()
 
     // range_msg_.radiation_type = Range.ULTRASOUND;
     range_msg_.radiation_type = 0;
-    range_msg_.field_of_view = 0.0;
-    range_msg_.min_range = 0.1;
+    range_msg_.field_of_view = 0.6108; // 35 degree
+    range_msg_.min_range = 0.05;
     range_msg_.max_range = 0.5;
     range_msg_.range = distance_m;
 //
