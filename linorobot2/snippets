@@ -24,15 +24,16 @@ ros2 launch linorobot2_navigation navigation.launch.py
 # verbose (default)
 ros2 launch linorobot2_navigation navigation.launch.py sim:=false rviz:=false \
     map:=$(ros2 pkg prefix fitrobot)/share/fitrobot/maps/office_res002_0914.yaml
+    params_file:=$(ros2 pkg prefix linorobot2_navigation)/share/linorobot2_navigation/config/zbotlino/navigation.yaml
 
 
 # === defined-route navigation ===
-TBD
-# ros2 launch linorobot2_navigation navigation_keepout.launch.py
-# verbose
-# ros2 launch linorobot2_navigation navigation_keepout.launch.py sim:=false rviz:=false \
-#     map:=$(ros2 pkg prefix fitrobot)/share/fitrobot/maps/office_res002_0914.yaml \
-#     mask:=$HOME/maps/keepout_mask.yaml
+ros2 launch linorobot2_navigation navigation_keepout.launch.py
+# verbose (default)
+ros2 launch linorobot2_navigation navigation_keepout.launch.py sim:=false rviz:=false \
+    map:=$(ros2 pkg prefix fitrobot)/share/fitrobot/maps/office_res002_0523.yaml \
+    mask:=$(ros2 pkg prefix fitrobot)/share/fitrobot/masks/keepout_mask_office_res002_0523.yaml \
+    params_file:=$(ros2 pkg prefix linorobot2_navigation)/share/linorobot2_navigation/config/zbotlino/navigation_keepout.yaml
 
 
 # === rviz (on pc) ===

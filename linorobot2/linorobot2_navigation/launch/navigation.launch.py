@@ -22,18 +22,15 @@ def include_launch_description(launch_path, **kwargs):
 
 
 def generate_launch_description():
-    # MAP_NAME = "turtlebot3_world"
+    package_name = "linorobot2_navigation"
 
     # simulation only: 2wd|4wd|macanum|zbotlinolong
     # real robot: zbotlino(use rplidar)|zbotlinosick1
     robot_base = os.getenv('LINOROBOT2_BASE', 'zbotlino')
-    package_name = "linorobot2_navigation"
 
     # the footprint of both is the same
     if robot_base in ["zbotlino", "zbotlinosick1"]:
         robot_base = "zbotlino"
-
-    # default_map_path = get_path(package_name, ["maps", f"{MAP_NAME}.yaml"])
 
     default_map_path = get_path("fitrobot", ["maps", "office_res002_0914.yaml"])
     default_map_path_sim = get_path(package_name, ["maps", "turtlebot3_world.yaml"])
