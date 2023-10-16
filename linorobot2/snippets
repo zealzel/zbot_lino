@@ -1,17 +1,16 @@
+# ===================================================
+# real robot navigation
+# ===================================================
 
-# === simulation ===
-ros2 launch linorobot2_gazebo gazebo.launch.py # default world: turtlebot3_world
-# verbose
-ros2 launch linorobot2_gazebo gazebo.launch.py \
-    world:=$(ros2 pkg prefix turtlebot3_gazebo)/share/turtlebot3_gazebo/worlds/turtlebot3_world.world x:=0.5
+# === robot bringup (on robot) ===
+ros2 launch linorobot2_bringup bringup.launch.py
 
-# === simulation using rmf's traffic-editor generated world ===
-ros2 launch linorobot2_gazebo sim.launch.py map_name:=fit_office # (default map_name: fit_office)
-
+# === teleop (on robot or pc) ===
+ros2 run teleop_twist_keyboard teleop_twist_keyboard
 
 <<<----------------------------------------------------------------------->>>
 
-# === slam mapping ===
+# === slam mapping (on robot) ===
 ros2 launch linorobot2_navigation slam.launch.py
 
 
@@ -20,23 +19,21 @@ ros2 run nav2_map_server map_saver_cli -f mymap # pgm/yaml
 ros2 service call /slam_toolbox/serialize_map slam_toolbox/srv/SerializePoseGraph "filename: '$HOME/maps/mymap'" # serialized map for continuous mapping
 
 
-# === navigation ===
-ros2 launch linorobot2_navigation navigation.launch.py sim:=true rviz:=true
-# verbose
-ros2 launch linorobot2_navigation navigation.launch.py sim:=true rviz:true \
-    map:=/opt/ros/humble/share/turtlebot3_navigation2/map/map.yaml
-
-# === navigation using traffic-editor generated gazebo world & slamed maps ===
-ros2 launch linorobot2_navigation navigation_rmf.launch.py sim:=true rviz:=true map_name:=fit_office_res002_0926
+# === navigation (on robot) ===
+ros2 launch linorobot2_navigation navigation.launch.py
+# verbose (default)
+ros2 launch linorobot2_navigation navigation.launch.py sim:=false rviz:=false \
+    map:=$(ros2 pkg prefix fitrobot)/share/fitrobot/maps/office_res002_0914.yaml
 
 
 # === defined-route navigation ===
-ros2 launch linorobot2_navigation navigation_keepout.launch.py sim:=true rviz:=true
+TBD
+# ros2 launch linorobot2_navigation navigation_keepout.launch.py
 # verbose
-ros2 launch linorobot2_navigation navigation_keepout.launch.py sim:=true rviz:=true \
-    map:=/opt/ros/humble/share/turtlebot3_navigation2/map/map.yaml \
-    mask:=$HOME/maps/keepout_mask.yaml
+# ros2 launch linorobot2_navigation navigation_keepout.launch.py sim:=false rviz:=false \
+#     map:=$(ros2 pkg prefix fitrobot)/share/fitrobot/maps/office_res002_0914.yaml \
+#     mask:=$HOME/maps/keepout_mask.yaml
 
-# === defined_route navigation using traffic-editor generated gazebo world & slamed maps & homebrewed masks ===
-ros2 launch linorobot2_navigation navigation_keepout_rmf.launch.py sim:=true rviz:=true \
-    map_name:=fit_office_res002_0926 # (default: fit_office_res002_0926)
+
+# === rviz (on pc) ===
+ros2 launch nav2_bringup rviz_launch.py

@@ -3,7 +3,7 @@ from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument, IncludeLaunchDescription
 from launch.substitutions import LaunchConfiguration, PathJoinSubstitution
 from launch.launch_description_sources import PythonLaunchDescriptionSource
-from launch.conditions import IfCondition
+from launch.conditions import IfCondition, UnlessCondition
 from launch_ros.substitutions import FindPackageShare
 from launch_ros.actions import Node
 
@@ -22,7 +22,7 @@ def include_launch_description(launch_path, **kwargs):
 
 
 def generate_launch_description():
-    MAP_NAME = "turtlebot3_world"
+    # MAP_NAME = "turtlebot3_world"
 
     # simulation only: 2wd|4wd|macanum|zbotlinolong
     # real robot: zbotlino(use rplidar)|zbotlinosick1
@@ -33,10 +33,42 @@ def generate_launch_description():
     if robot_base in ["zbotlino", "zbotlinosick1"]:
         robot_base = "zbotlino"
 
-    default_map_path = get_path(package_name, ["maps", f"{MAP_NAME}.yaml"])
+    # default_map_path = get_path(package_name, ["maps", f"{MAP_NAME}.yaml"])
+
+    default_map_path = get_path("fitrobot", ["maps", "office_res002_0914.yaml"])
+    default_map_path_sim = get_path(package_name, ["maps", "turtlebot3_world.yaml"])
+
     params_file_path = get_path(package_name, ["config", robot_base, "navigation.yaml"])
     nav2_launch_path = get_path("nav2_bringup", ["launch", "bringup_launch.py"])
     rviz_config_path = get_path("nav2_bringup", ["rviz", "nav2_default_view.rviz"])
+
+    use_sim_arg = DeclareLaunchArgument(
+        name="sim",
+        default_value="false",
+        description="Enable use_sime_time to true",
+    )
+    use_rviz_arg = DeclareLaunchArgument(
+        name="rviz", default_value="false", description="Run rviz"
+    )
+    params_arg = DeclareLaunchArgument(
+        "params_file",
+        default_value=params_file_path,
+        description=(
+            "Full path to the ROS2 parameters file to use for all launched nodes"
+        ),
+    )
+    map_arg = DeclareLaunchArgument(
+        name="map",
+        default_value=default_map_path,
+        description="Navigation map path",
+        condition=UnlessCondition(LaunchConfiguration("sim")),
+    )
+    map_sim_arg = DeclareLaunchArgument(
+        name="map",
+        default_value=default_map_path_sim,
+        description="Navigation map path",
+        condition=IfCondition(LaunchConfiguration("sim")),
+    )
 
     nav2_bringup = include_launch_description(
         nav2_launch_path,
@@ -64,24 +96,10 @@ def generate_launch_description():
     )
     return LaunchDescription(
         [
-            DeclareLaunchArgument(
-                "params_file",
-                default_value=params_file_path,
-                description="nav2 params file path",
-            ),
-            DeclareLaunchArgument(
-                name="sim",
-                default_value="false",
-                description="Enable use_sim_time to true",
-            ),
-            DeclareLaunchArgument(
-                name="map",
-                default_value=default_map_path,
-                description="Navigation map path",
-            ),
-            DeclareLaunchArgument(
-                name="rviz", default_value="false", description="Run rviz"
-            ),
+            use_sim_arg,
+            use_rviz_arg,
+            params_arg,
+            map_arg, map_sim_arg,
             nav2_bringup,
             rviz,
             uros_repub,
