@@ -26,8 +26,8 @@ def get_path(package_name, subpaths):
 
 
 def generate_launch_description():
-    # nanoscan3_launch_path = get_path("sick_safetyscanners2", ["launch", "sick_safetyscanners2_lifecycle_launch.py"])
-    nanoscan3_launch_path = get_path("sick_safetyscanners2", ["launch", "sick_safetyscanners2_launch.py"])
+    # nanoscan3_launch_path = get_path("linorobot2_bringup", ["launch", "sick_safetyscanners2_lifecycle_launch.py"])
+    nanoscan3_launch_path = get_path("linorobot2_bringup", ["launch", "sick_safetyscanners2_launch.py"])
 
     ydlidar_config_path = PathJoinSubstitution(
         [FindPackageShare("linorobot2_bringup"), "config", "ydlidar.yaml"]
@@ -35,6 +35,11 @@ def generate_launch_description():
 
     nanoscan3_bringup = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(nanoscan3_launch_path),
+        launch_arguments={
+            "sensor_ip": LaunchConfiguration("sensor_ip"),
+            "host_ip": LaunchConfiguration("host_ip"),
+            "remap_topic": LaunchConfiguration("remap_topic"),
+        },
         condition=LaunchConfigurationEquals('sensor', 'nanoscan3'),
     )
 
