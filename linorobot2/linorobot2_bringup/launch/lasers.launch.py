@@ -26,6 +26,7 @@ def get_path(package_name, subpaths):
 
 
 def generate_launch_description():
+
     # nanoscan3_launch_path = get_path("linorobot2_bringup", ["launch", "sick_safetyscanners2_lifecycle_launch.py"])
     nanoscan3_launch_path = get_path("linorobot2_bringup", ["launch", "sick_safetyscanners2_launch.py"])
 
@@ -39,11 +40,14 @@ def generate_launch_description():
             "sensor_ip": LaunchConfiguration("sensor_ip"),
             "host_ip": LaunchConfiguration("host_ip"),
             "remap_topic": LaunchConfiguration("remap_topic"),
-        },
+        }.items(),
         condition=LaunchConfigurationEquals('sensor', 'nanoscan3'),
     )
 
     return LaunchDescription([
+        DeclareLaunchArgument("sensor_ip", default_value="192.168.1.2"),
+        DeclareLaunchArgument("host_ip", default_value="192.168.1.3"),
+        DeclareLaunchArgument("remap_topic", default_value="/scan"),
         DeclareLaunchArgument(
             name='sensor',
             default_value='ydlidar',
