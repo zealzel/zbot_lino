@@ -37,6 +37,7 @@ def generate_launch_description():
     nanoscan3_bringup = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(nanoscan3_launch_path),
         launch_arguments={
+            "node_name": LaunchConfiguration("node_name"),
             "frame_id": LaunchConfiguration("frame_id"),
             "topic_name": LaunchConfiguration("topic_name"),
             "sensor_ip": LaunchConfiguration("sensor_ip"),

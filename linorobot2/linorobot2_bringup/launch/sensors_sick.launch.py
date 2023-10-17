@@ -41,8 +41,8 @@ def generate_launch_description():
             launch_arguments={
                 'node_name': "sick_safetyscanners2_node_2",
                 'sensor': laser_sensor_name,
-                'sensor_ip': '192.168.1.12',
-                'host_ip': '192.168.1.4',
+                'sensor_ip': '192.168.1.4',
+                'host_ip': '192.168.1.12',
                 'topic_name': 'scan2',
                 'frame_id': 'laser2'
             }.items()
