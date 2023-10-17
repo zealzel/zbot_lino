@@ -25,7 +25,7 @@ def include_launch_description(launch_path, **kwargs):
 def generate_launch_description():
 
     # simulation only: 2wd|4wd|macanum|zbotlinolong
-    # real robot: zbotlino(use rplidar)|zbotlinosick1
+    # real robot: zbotlino(use rplidar)|zbotlinosick1|zbotlinosick2
     robot_base = os.getenv("LINOROBOT2_BASE", "zbotlinosick1")
 
     urdf_path = get_path(

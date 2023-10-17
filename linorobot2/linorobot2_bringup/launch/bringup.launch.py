@@ -1,3 +1,4 @@
+import os
 from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument, IncludeLaunchDescription
 from launch.substitutions import (
@@ -20,7 +21,14 @@ def include_launch_description(launch_path, **kwargs):
 
 
 def generate_launch_description():
-    sensors_launch_path = get_path("linorobot2_bringup", ["launch", "sensors.launch.py"])
+    # real robot: zbotlino(use rplidar)|zbotlinosick1|zbotlinosick2
+    robot_base = os.getenv("LINOROBOT2_BASE", "zbotlinosick2")
+    if robot_base == "zbotlinosick2":
+        sensor_launch = "sensors_sick"
+    else:
+        sensor_launch = "sensors"
+
+    sensors_launch_path = get_path("linorobot2_bringup", ["launch", f"{sensor_launch}.launch.py"])
     description_launch_path = get_path("linorobot2_description", ["launch", "description.launch.py"])
     ekf_config_path = get_path("linorobot2_base", ["config", "ekf.yaml"])
     ekf = Node(
