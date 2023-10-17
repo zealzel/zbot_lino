@@ -27,6 +27,10 @@
     <origin xyz="${base_length/2+offset_x-0.06} 0 0.14" rpy="0 0 0"/>
   </xacro:property>
 
+  <xacro:property name="laser_pose_nanoscan3_back">
+    <origin xyz="${0.05-0.055} 0 0.14" rpy="0 0 3.1415"/>
+  </xacro:property>
+
   <xacro:property name="laser_pose_front_inverted">
     <origin xyz="${base_length/2+offset_x} 0 0.088" rpy="3.1415 0 0"/>
   </xacro:property>

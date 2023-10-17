@@ -27,9 +27,11 @@ def generate_launch_description():
     # simulation only: 2wd|4wd|macanum|zbotlinolong
     # real robot: zbotlino(use rplidar)|zbotlinosick1
     robot_base = os.getenv('LINOROBOT2_BASE', 'zbotlino')
+    # robot_base = os.getenv('LINOROBOT2_BASE', 'zbotlinosick2')
+    package_name = "linorobot2_navigation"
 
     # the footprint of both is the same
-    if robot_base in ["zbotlino", "zbotlinosick1"]:
+    if robot_base in ["zbotlino", "zbotlinosick1", "zbotlinosick2"]:
         robot_base = "zbotlino"
 
     default_map_path = get_path("fitrobot", ["maps", "office_res002_0914.yaml"])
