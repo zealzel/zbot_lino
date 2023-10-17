@@ -37,6 +37,7 @@ def generate_launch_description():
     nanoscan3_bringup = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(nanoscan3_launch_path),
         launch_arguments={
+            "frame_id": LaunchConfiguration("frame_id"),
             "sensor_ip": LaunchConfiguration("sensor_ip"),
             "host_ip": LaunchConfiguration("host_ip"),
             "remap_topic": LaunchConfiguration("remap_topic"),
@@ -45,6 +46,7 @@ def generate_launch_description():
     )
 
     return LaunchDescription([
+        DeclareLaunchArgument("frame_id", default_value="laser"),
         DeclareLaunchArgument("sensor_ip", default_value="192.168.1.2"),
         DeclareLaunchArgument("host_ip", default_value="192.168.1.3"),
         DeclareLaunchArgument("remap_topic", default_value="/scan"),

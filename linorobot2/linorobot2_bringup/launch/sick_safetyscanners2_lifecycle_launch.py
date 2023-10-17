@@ -5,10 +5,12 @@ from launch_ros.actions import Node
 
 
 def generate_launch_description():
+    frame_id_arg = DeclareLaunchArgument("frame_id")
     sensor_ip_arg = DeclareLaunchArgument("sensor_ip")
     host_ip_arg = DeclareLaunchArgument("host_ip")
     remap_topic_arg = DeclareLaunchArgument("remap_topic")
     return LaunchDescription([
+        frame_id_arg,
         sensor_ip_arg,
         host_ip_arg,
         remap_topic_arg,
@@ -19,7 +21,7 @@ def generate_launch_description():
             output="screen",
             emulate_tty=True,
             parameters=[
-                {"frame_id": "scan",
+                {"frame_id": LaunchConfiguration("frame_id"),
                  "sensor_ip": LaunchConfiguration("sensor_ip"),
                  "host_ip": LaunchConfiguration("host_ip"),
                  "interface_ip": "0.0.0.0",
@@ -39,7 +41,7 @@ def generate_launch_description():
                  "min_intensities": 0.0}
             ],
             remappings=[
-                ("/scan", LaunchConfiguration("remap_topic_arg")),
+                ("/scan", LaunchConfiguration("remap_topic")),
             ],
         ),
     ])

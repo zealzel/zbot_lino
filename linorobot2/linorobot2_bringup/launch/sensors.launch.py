@@ -84,4 +84,3 @@ def generate_launch_description():
             parameters=[fake_laser_config_path]
         )
     ])
-
