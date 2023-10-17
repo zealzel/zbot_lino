@@ -38,36 +38,19 @@ def generate_launch_description():
         PythonLaunchDescriptionSource(nanoscan3_launch_path),
         launch_arguments={
             "frame_id": LaunchConfiguration("frame_id"),
+            "topic_name": LaunchConfiguration("topic_name"),
             "sensor_ip": LaunchConfiguration("sensor_ip"),
             "host_ip": LaunchConfiguration("host_ip"),
-            "remap_topic": LaunchConfiguration("remap_topic"),
         }.items(),
         condition=LaunchConfigurationEquals('sensor', 'nanoscan3'),
     )
 
     return LaunchDescription([
-        DeclareLaunchArgument("frame_id", default_value="laser"),
-        DeclareLaunchArgument("sensor_ip", default_value="192.168.1.2"),
-        DeclareLaunchArgument("host_ip", default_value="192.168.1.3"),
-        DeclareLaunchArgument("remap_topic", default_value="/scan"),
-        DeclareLaunchArgument(
-            name='sensor',
-            default_value='ydlidar',
-            description='Sensor to launch'
-        ),
-
-        DeclareLaunchArgument(
-            name='topic_name',
-            default_value='scan',
-            description='Laser Topic Name'
-        ),
-
-        DeclareLaunchArgument(
-            name='frame_id',
-            default_value='laser',
-            description='Laser Frame ID'
-        ),
-
+        DeclareLaunchArgument(name='frame_id', default_value='laser'),
+        DeclareLaunchArgument(name="sensor_ip", default_value="192.168.1.2"),
+        DeclareLaunchArgument(name="host_ip", default_value="192.168.1.3"),
+        DeclareLaunchArgument(name='sensor', default_value='rplidar'),
+        DeclareLaunchArgument(name='topic_name', default_value='scan'),
         Node(
             condition=LaunchConfigurationEquals('sensor', 'ydlidar'),
             package='ydlidar_ros2_driver',

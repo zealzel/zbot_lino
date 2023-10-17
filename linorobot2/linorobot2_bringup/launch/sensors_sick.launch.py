@@ -26,6 +26,7 @@ def generate_launch_description():
         IncludeLaunchDescription(
             PythonLaunchDescriptionSource(laser_launch_path),
             launch_arguments={
+                'node_name': "sick_safetyscanners2_node_1",
                 'sensor': laser_sensor_name,
                 'sensor_ip': '192.168.1.2',
                 'host_ip': '192.168.1.3',
@@ -38,6 +39,7 @@ def generate_launch_description():
         IncludeLaunchDescription(
             PythonLaunchDescriptionSource(laser_launch_path),
             launch_arguments={
+                'node_name': "sick_safetyscanners2_node_2",
                 'sensor': laser_sensor_name,
                 'sensor_ip': '192.168.1.12',
                 'host_ip': '192.168.1.4',
