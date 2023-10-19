@@ -47,10 +47,11 @@ def generate_launch_description():
     )
 
     return LaunchDescription([
+        DeclareLaunchArgument(name='node_name', default_value='sick_safetyscanners2_node'),
         DeclareLaunchArgument(name='frame_id', default_value='laser'),
         DeclareLaunchArgument(name="sensor_ip", default_value="192.168.1.2"),
         DeclareLaunchArgument(name="host_ip", default_value="192.168.1.3"),
-        DeclareLaunchArgument(name='sensor', default_value='rplidar'),
+        DeclareLaunchArgument(name='sensor', default_value='nanscan3'),
         DeclareLaunchArgument(name='topic_name', default_value='scan'),
         Node(
             condition=LaunchConfigurationEquals('sensor', 'ydlidar'),
