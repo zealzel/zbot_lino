@@ -129,9 +129,9 @@ controller_server:
       vy_std: 0.2
       wz_std: 0.4
       vx_max: 0.5
-      vx_min: -0.35
+      vx_min: -0.1
       vy_max: 0.5
-      wz_max: 1.9
+      wz_max: 0.8
       iteration_count: 1
       prune_distance: 1.7
       transform_tolerance: 0.1
@@ -169,13 +169,13 @@ controller_server:
         enabled: true
         cost_power: 1
         repulsion_weight: 1.5
-        critical_weight: 20.0
+        critical_weight: 10.0
         consider_footprint: false
         collision_cost: 10000.0
         collision_margin_distance: 0.1
         near_goal_distance: 0.5
         inflation_radius: 0.25 # (only in Humble)
-        cost_scaling_factor: 3.0 # (only in Humble)
+        cost_scaling_factor: 1.5 # (only in Humble)
       PathAlignCritic:
         enabled: true
         cost_power: 1
@@ -237,7 +237,7 @@ local_costmap:
         clear_on_max_reading: false
       inflation_layer:
         plugin: "nav2_costmap_2d::InflationLayer"
-        cost_scaling_factor: 3.0
+        cost_scaling_factor: 1.5
         inflation_radius: 0.25
       obstacle_layer:
         plugin: "nav2_costmap_2d::ObstacleLayer"
@@ -308,7 +308,7 @@ global_costmap:
       inflation_layer:
         plugin: "nav2_costmap_2d::InflationLayer"
         cost_scaling_factor: 1.5
-        inflation_radius: 0.30
+        inflation_radius: 0.25
       keepout_filter:
         plugin: "nav2_costmap_2d::KeepoutFilter"
         enabled: True
