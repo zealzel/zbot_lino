@@ -40,8 +40,7 @@ def generate_launch_description():
     default_mask_path_sim = get_path(
         package_name, ["masks", "keepout_mask_turtlebot3_world.yaml"]
     )
-
-    params_file_path = get_path(
+    default_params_file_path = get_path(
         package_name, ["config", robot_base, "navigation_keepout.yaml"]
     )
     costmap_filter_info_launch_path = get_path(
@@ -58,19 +57,18 @@ def generate_launch_description():
     use_rviz_arg = DeclareLaunchArgument(
         name="rviz", default_value="false", description="Run rviz"
     )
-    params_arg = DeclareLaunchArgument(
-        "params_file",
-        default_value=params_file_path,
-        description=(
-            "Full path to the ROS2 parameters file to use for all launched nodes"
-        ),
+    map_arg = DeclareLaunchArgument(
+        name="map",
+        default_value=default_map_path,
+        description="Navigation map path",
+        condition=UnlessCondition(LaunchConfiguration("sim")),
     )
-    keepout_params_arg = DeclareLaunchArgument(
-        "keepout_params_file",
-        default_value=get_path(package_name, ["params", "keepout_params.yaml"]),
-        description="params file for keepout layer",
+    map_sim_arg = DeclareLaunchArgument(
+        name="map",
+        default_value=default_map_path_sim,
+        description="Navigation map path",
+        condition=IfCondition(LaunchConfiguration("sim")),
     )
-
     mask_arg = DeclareLaunchArgument(
         "mask",
         default_value=default_mask_path,
@@ -84,17 +82,17 @@ def generate_launch_description():
         condition=IfCondition(LaunchConfiguration("sim")),
     )
 
-    map_arg = DeclareLaunchArgument(
-        name="map",
-        default_value=default_map_path,
-        description="Navigation map path",
-        condition=UnlessCondition(LaunchConfiguration("sim")),
+    params_arg = DeclareLaunchArgument(
+        "params_file",
+        default_value=default_params_file_path,
+        description=(
+            "Full path to the ROS2 parameters file to use for all launched nodes"
+        ),
     )
-    map_sim_arg = DeclareLaunchArgument(
-        name="map",
-        default_value=default_map_path_sim,
-        description="Navigation map path",
-        condition=IfCondition(LaunchConfiguration("sim")),
+    keepout_params_arg = DeclareLaunchArgument(
+        "keepout_params_file",
+        default_value=get_path(package_name, ["params", "keepout_params.yaml"]),
+        description="params file for keepout layer",
     )
 
     costmap_filter_info = IncludeLaunchDescription(
@@ -142,10 +140,8 @@ def generate_launch_description():
             use_sim_arg,
             use_rviz_arg,
             keepout_params_arg,
-            map_arg,
-            map_sim_arg,
-            mask_arg,
-            mask_sim_arg,
+            map_arg, map_sim_arg,
+            mask_arg, mask_sim_arg,
             params_arg,
             nav2_bringup,
             costmap_filter_info_delayed,
