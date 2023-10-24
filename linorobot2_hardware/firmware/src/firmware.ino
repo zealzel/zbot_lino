@@ -174,10 +174,10 @@ void twistCallback(const void * msgin)
 }
 
 void motorBrakeCallback(const void * msgin)
-{  
+{
   // example ros client usage: ros2 topic pub -1 /motor_brake std_msgs/msg/Int32 "{data: 2}"
   const std_msgs__msg__Int32 * msg = (const std_msgs__msg__Int32 *)msgin;
-  digitalWrite(LED_PIN, (msg->data == 0) ? LOW : HIGH);  
+  digitalWrite(LED_PIN, (msg->data == 0) ? LOW : HIGH);
   if (msg->data ==0) {
     in_brake = true;
     fullStop();
