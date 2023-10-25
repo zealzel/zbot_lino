@@ -30,59 +30,50 @@ def include_launch_description(launch_path, **kwargs):
 
 
 def generate_launch_description():
+    package_name = "linorobot2_navigation"
     MAP_NAME = "fit_office_res002_0926"
 
-    # simulation only: 2wd|4wd|macanum|zbotlinolong
-    # real robot: zbotlino(use rplidar)|zbotlinosick1
+    # simulation only: 2wd|4wd|macanum|zbotlinolong|zbotlinosick1|zbotlinosick2
     robot_base = os.getenv('LINOROBOT2_BASE', 'zbotlino')
-    package_name = "linorobot2_navigation"
 
     # the footprint of both is the same
     if robot_base == ["zbotlino", "zbotlinosick1"]:
         robot_base = "zbotlino"
 
-    # default_map_path = get_path(package_name, ["maps", f"{MAP_NAME}.yaml"])
-    params_file_path = get_path(package_name, ["config", robot_base, "navigation_keepout.yaml"])
-    costmap_filter_info_launch_path = get_path(package_name, ["launch", "costmap_filter_info.launch.py"])
     nav2_launch_path = get_path("nav2_bringup", ["launch", "bringup_launch.py"])
+    costmap_filter_info_launch_path = get_path(package_name, ["launch", "costmap_filter_info.launch.py"])
     rviz_config_path = get_path("nav2_bringup", ["rviz", "nav2_default_view.rviz"])
 
-    params_file_arg = DeclareLaunchArgument(
-        "params_file",
-        default_value=params_file_path,
-        description="nav2 params file path",
-    )
-    sim_arg = DeclareLaunchArgument(
-        name="sim",
-        default_value="false",
-        description="Enable use_sime_time to true",
-    )
-    rviz_arg = DeclareLaunchArgument(
-        name="rviz", default_value="false", description="Run rviz"
-    )
+    sim_arg = DeclareLaunchArgument(name="sim", default_value="true")
+    rviz_arg = DeclareLaunchArgument(name="rviz", default_value="true")
+
     map_name_arg = DeclareLaunchArgument("map_name", default_value=MAP_NAME)
+
     maploc = os.path.join(get_package_share_directory(package_name), 'maps')
     map_arg = DeclareLaunchArgument(
         name="map",
         default_value=[f'{maploc}/', LaunchConfiguration("map_name"), ".yaml"],
         description="Navigation map path",
     )
-    keepout_params_arg = DeclareLaunchArgument(
-        "keepout_params_file",
-        default_value=get_path(package_name, ["params", "keepout_params.yaml"]),
-        description="params file for keepout layer",
-    )
+
     maskloc = os.path.join(get_package_share_directory(package_name), 'masks')
     mask_arg = DeclareLaunchArgument(
         "mask",
         default_value=[f'{maskloc}/', "keepout_mask.", LaunchConfiguration("map_name"), ".yaml"],
-        # default_value=get_path(package_name, ["masks", "keepout_mask.yaml"]),
         description="mask file for keepout layer",
     )
-    map_arg = DeclareLaunchArgument(
-        name="map",
-        default_value=[f'{maploc}/', LaunchConfiguration("map_name"), ".yaml"],
-        description="Navigation map path",
+
+    params_file_path = get_path(package_name, ["config", robot_base, "navigation_keepout.yaml"])
+    params_file_arg = DeclareLaunchArgument(
+        "params_file",
+        default_value=params_file_path,
+        description="nav2 params file path",
+    )
+
+    keepout_params_arg = DeclareLaunchArgument(
+        "keepout_params_file",
+        default_value=get_path(package_name, ["params", "keepout_params.yaml"]),
+        description="params file for keepout layer",
     )
 
     costmap_filter_info = IncludeLaunchDescription(
@@ -92,6 +83,7 @@ def generate_launch_description():
             "mask": LaunchConfiguration("mask"),
         }.items(),
     )
+
     nav2_bringup = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(nav2_launch_path),
         launch_arguments={
@@ -100,6 +92,7 @@ def generate_launch_description():
             "params_file": LaunchConfiguration("params_file"),
         }.items()
     )
+
     # if not delayed, nav2_bringup will not able to launch controllers successfully
     costmap_filter_info_delayed = LaunchDescription([
         TimerAction(
@@ -107,6 +100,7 @@ def generate_launch_description():
             actions=[costmap_filter_info],
         )],
     )
+
     rviz = Node(
         package="rviz2",
         executable="rviz2",
@@ -118,13 +112,13 @@ def generate_launch_description():
     )
     return LaunchDescription(
         [
-            params_file_arg,
             sim_arg,
             rviz_arg,
             map_name_arg,
-            keepout_params_arg,
-            mask_arg,
             map_arg,
+            mask_arg,
+            params_file_arg,
+            keepout_params_arg,
             nav2_bringup,
             costmap_filter_info_delayed,
             rviz,

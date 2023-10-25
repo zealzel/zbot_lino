@@ -34,12 +34,9 @@ def generate_launch_description():
     default_map_path = get_path("fitrobot", ["maps", "office_res002_0523.yaml"])
     default_map_path_sim = get_path(package_name, ["maps", "turtlebot3_world.yaml"])
 
-    default_mask_path = get_path(
-        "fitrobot", ["masks", "keepout_mask_office_res002_0523.yaml"]
-    )
-    default_mask_path_sim = get_path(
-        package_name, ["masks", "keepout_mask_turtlebot3_world.yaml"]
-    )
+    default_mask_path = get_path("fitrobot", ["masks", "keepout_mask_office_res002_0523.yaml"])
+    default_mask_path_sim = get_path(package_name, ["masks", "keepout_mask_turtlebot3_world.yaml"])
+
     default_params_file_path = get_path(
         package_name, ["config", robot_base, "navigation_keepout.yaml"]
     )

@@ -23,18 +23,16 @@ def include_launch_description(launch_path, **kwargs):
 
 
 def generate_launch_description():
-    MAP_NAME = "turtlebot3_world"
+    package_name = "linorobot2_navigation"
+    MAP_NAME = "fit_office_res002_0926"
 
     # simulation only: 2wd|4wd|macanum|zbotlinolong
-    # real robot: zbotlino(use rplidar)|zbotlinosick1
     robot_base = os.getenv('LINOROBOT2_BASE', 'zbotlino')
-    package_name = "linorobot2_navigation"
 
     # the footprint of both is the same
     if robot_base == ["zbotlino", "zbotlinosick1"]:
         robot_base = "zbotlino"
 
-    # default_map_path = get_path(package_name, ["maps", f"{MAP_NAME}.yaml"])
     params_file_path = get_path(package_name, ["config", robot_base, "navigation.yaml"])
     nav2_launch_path = get_path("nav2_bringup", ["launch", "bringup_launch.py"])
     rviz_config_path = get_path("nav2_bringup", ["rviz", "nav2_default_view.rviz"])
@@ -44,14 +42,8 @@ def generate_launch_description():
         default_value=params_file_path,
         description="nav2 params file path",
     )
-    sim_arg = DeclareLaunchArgument(
-        name="sim",
-        default_value="false",
-        description="Enable use_sim_time to true",
-    )
-    rviz_arg = DeclareLaunchArgument(
-        name="rviz", default_value="false", description="Run rviz"
-    )
+    sim_arg = DeclareLaunchArgument(name="sim", default_value="true")
+    rviz_arg = DeclareLaunchArgument(name="rviz", default_value="true")
     map_name_arg = DeclareLaunchArgument("map_name", default_value=MAP_NAME)
     maploc = os.path.join(get_package_share_directory(package_name), 'maps')
     map_arg = DeclareLaunchArgument(
