@@ -26,8 +26,8 @@ def generate_launch_description():
 
     # simulation only: 2wd|4wd|macanum|zbotlinolong
     # real robot: zbotlino(use rplidar)|zbotlinosick1|zbotlinosick2|zbotlino2
-    # robot_base = os.getenv("LINOROBOT2_BASE", "zbotlino2")
-    robot_base = os.getenv("LINOROBOT2_BASE", "zbotlinosick2")
+    # robot_base = os.getenv("LINOROBOT2_BASE", "zbotlinosick2")
+    robot_base = os.getenv("LINOROBOT2_BASE", "zbotlino2")
 
     urdf_path = get_path(
         "linorobot2_description", ["urdf", "robots", f"{robot_base}.urdf.xacro"]

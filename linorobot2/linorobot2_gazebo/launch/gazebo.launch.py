@@ -38,7 +38,7 @@ def generate_launch_description():
     ekf_config_path = get_path("linorobot2_base", ["config", "ekf.yaml"])
 
     x_arg = DeclareLaunchArgument("x", default_value="0.5", description="x position")
-    y_arg = DeclareLaunchArgument("y", default_value="0", description="y position")
+    y_arg = DeclareLaunchArgument("y", default_value="0.5", description="y position")
     world_arg = DeclareLaunchArgument(
         "world",
         default_value=world_path,

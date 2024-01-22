@@ -26,8 +26,9 @@ def generate_launch_description():
 
     # simulation only: 2wd|4wd|macanum|zbotlinolong
     # real robot: zbotlino(use rplidar)|zbotlinosick1
-    robot_base = os.getenv('LINOROBOT2_BASE', 'zbotlino')
+    # robot_base = os.getenv('LINOROBOT2_BASE', 'zbotlino')
     # robot_base = os.getenv('LINOROBOT2_BASE', 'zbotlinosick2')
+    robot_base = os.getenv('LINOROBOT2_BASE', 'zbotlino2')
     package_name = "linorobot2_navigation"
 
     # the footprint of both is the same
