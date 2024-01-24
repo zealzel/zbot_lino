@@ -23,7 +23,7 @@ def include_launch_description(launch_path, **kwargs):
 def generate_launch_description():
     # real robot: zbotlino(use rplidar)|zbotlinosick1|zbotlinosick2
     robot_base = os.getenv("LINOROBOT2_BASE", "zbotlinosick2")
-    if robot_base == "zbotlinosick2":
+    if robot_base in ["zbotlinosick2", "zbotlino2"]:
         sensor_launch = "sensors_sick"
     else:
         sensor_launch = "sensors"
