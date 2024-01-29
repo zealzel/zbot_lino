@@ -21,10 +21,17 @@ def include_launch_description(launch_path, **kwargs):
 
 
 def generate_launch_description():
+    robot_base = os.getenv('LINOROBOT2_BASE', 'zbotlino2')
+    package_name = "linorobot2_navigation"
     slam_launch_path = get_path("slam_toolbox", ["launch", "online_async_launch.py"])
-    slam_config_path = get_path("linorobot2_navigation", ["config", "slam.yaml"])
+
+    # slam_config_path = get_path("linorobot2_navigation", ["config", "slam.yaml"])
+    if robot_base in ["zbotlino2", "zbotlinosick2"]:
+        slam_config_path = get_path(package_name, ["config", robot_base, "slam.yaml"])
+    else:
+        slam_config_path = get_path(package_name, ["config", "slam.yaml"])
+
     rviz_config_path = get_path("nav2_bringup", ["rviz", "nav2_default_view.rviz"])
-    # rviz_config_path = get_path("linorobot2_navigation", ["rviz", "linorobot2_slam.rviz"])
 
     rviz = Node(
         package="rviz2",
