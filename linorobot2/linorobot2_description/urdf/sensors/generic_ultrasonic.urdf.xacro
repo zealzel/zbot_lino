@@ -55,7 +55,7 @@
       max_angle="0.174533"
       min_range="0.05"
       max_range="0.5"
-      frame_id="sonic2"
+      frame_id="sonic4"
       topic_name="range4/data"
     >
       <xacro:insert_block name="origin" />
