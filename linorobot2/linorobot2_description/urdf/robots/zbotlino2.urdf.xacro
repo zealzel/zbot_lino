@@ -83,6 +83,12 @@
     <xacro:insert_block name="range2_sensor_pose" />
   </xacro:range2>
 
+  <xacro:range3>
+    <xacro:insert_block name="range3_sensor_pose" />
+  </xacro:range3>
+  <xacro:range4>
+    <xacro:insert_block name="range4_sensor_pose" />
+  </xacro:range4>
 
   <xacro:diff_drive_controller
     wheel_separation="${wheel_pos_y * 2}"
