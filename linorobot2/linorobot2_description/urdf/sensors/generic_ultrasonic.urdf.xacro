@@ -16,6 +16,7 @@
       <xacro:insert_block name="origin" />
     </xacro:range_sensor>
   </xacro:macro>
+
   <xacro:macro name="range2" params="*origin">
     <xacro:range_sensor
       update_rate="10"
@@ -26,6 +27,36 @@
       max_range="0.5"
       frame_id="sonic2"
       topic_name="range2/data"
+    >
+      <xacro:insert_block name="origin" />
+    </xacro:range_sensor>
+  </xacro:macro>
+
+  <xacro:macro name="range3" params="*origin">
+    <xacro:range_sensor
+      update_rate="10"
+      ray_count="10"
+      min_angle="-0.174533"
+      max_angle="0.174533"
+      min_range="0.05"
+      max_range="0.5"
+      frame_id="sonic3"
+      topic_name="range3/data"
+    >
+      <xacro:insert_block name="origin" />
+    </xacro:range_sensor>
+  </xacro:macro>
+
+  <xacro:macro name="range4" params="*origin">
+    <xacro:range_sensor
+      update_rate="10"
+      ray_count="10"
+      min_angle="-0.174533"
+      max_angle="0.174533"
+      min_range="0.05"
+      max_range="0.5"
+      frame_id="sonic2"
+      topic_name="range4/data"
     >
       <xacro:insert_block name="origin" />
     </xacro:range_sensor>
