@@ -35,7 +35,9 @@ def generate_launch_description():
     if robot_base in ["zbotlino", "zbotlinosick1"]:
         robot_base = "zbotlino"
 
-    default_map_path = get_path("fitrobot", ["maps", "office_res002_0914.yaml"])
+    #default_map_path = get_path("fitrobot", ["maps", "office_res002_0914.yaml"])
+    default_map_path = get_path("fitrobot", ["maps", "lino2_office_20240129.yaml"])
+
     default_map_path_sim = get_path(package_name, ["maps", "turtlebot3_world.yaml"])
 
     params_file_path = get_path(package_name, ["config", robot_base, "navigation.yaml"])
