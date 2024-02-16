@@ -384,7 +384,8 @@ waypoint_follower:
   ros__parameters:
     use_sim_time: True
     loop_rate: 20
-    stop_on_failure: false
+    # stop_on_failure: false
+    stop_on_failure: true
     waypoint_task_executor_plugin: "input_at_waypoint"
     input_at_waypoint:
       plugin: "nav2_waypoint_follower::InputAtWaypoint"
