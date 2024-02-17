@@ -163,7 +163,8 @@ controller_server:
       PreferForwardCritic:
         enabled: true
         cost_power: 1
-        cost_weight: 6.0
+        # cost_weight: 6.0
+        cost_weight: 15.0
         threshold_to_consider: 0.5
       ObstaclesCritic:
         enabled: true
@@ -221,21 +222,21 @@ local_costmap:
       # plugins: ["obstacle_layer", "inflation_layer", "range_layer"]
       # plugins array order matters!
       # LaserScan working
-      plugins: ["obstacle_layer", "inflation_layer"]
+      # plugins: ["obstacle_layer", "inflation_layer"]
       # Range working
       # plugins: ["range_layer", "inflation_layer"]
       # LaserScan & Range both working
-      #plugins: ["range_layer", "obstacle_layer", "inflation_layer"]
+      plugins: ["range_layer", "obstacle_layer", "inflation_layer"]
       filters: ["keepout_filter"]
       range_layer:
         plugin: "nav2_costmap_2d::RangeSensorLayer"
-        topics: ["/range1_sensor", "/range2_sensor"]
+        # topics: ["/range1_sensor", "/range2_sensor"]
+        topics: ["/range1_sensor", "/range2_sensor", "/range3_sensor", "/range4_sensor"]
         inflate_cone: 1.0
-        #clear_threshold: 0.2
-        #mark_threshold: 0.8
         clear_threshold: 0.2
         mark_threshold: 0.8
-        clear_on_max_reading: false
+        # clear_on_max_reading: false
+        clear_on_max_reading: true
       inflation_layer:
         plugin: "nav2_costmap_2d::InflationLayer"
         cost_scaling_factor: 5.0
