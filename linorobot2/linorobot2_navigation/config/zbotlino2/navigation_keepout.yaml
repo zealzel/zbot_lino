@@ -391,7 +391,7 @@ waypoint_follower:
     input_at_waypoint:
       plugin: "nav2_waypoint_follower::InputAtWaypoint"
       enabled: True
-      timeout: 10.0
+      timeout: 300.0
       input_topic: ok_to_go
 
 velocity_smoother:
