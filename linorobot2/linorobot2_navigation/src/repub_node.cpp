@@ -25,9 +25,9 @@ class RepubNode : public rclcpp::Node {
             "/range4/data", 10,
             std::bind(&RepubNode::range4_callback, this, std::placeholders::_1));
 
-        pub_cmd_vel_ = this->create_publisher<geometry_msgs::msg::Twist>("/cmd_vel", 10);
-        sub_cmd_vel_ = this->create_subscription<geometry_msgs::msg::Twist>(
-            "/cmd_vel", 10, std::bind(&RepubNode::cmd_vel_callback, this, std::placeholders::_1));
+        // pub_cmd_vel_ = this->create_publisher<geometry_msgs::msg::Twist>("/cmd_vel", 10);
+        // sub_cmd_vel_ = this->create_subscription<geometry_msgs::msg::Twist>(
+        //     "/cmd_vel", 10, std::bind(&RepubNode::cmd_vel_callback, this, std::placeholders::_1));
 
         timer_ = this->create_wall_timer(std::chrono::milliseconds(100),
                                          std::bind(&RepubNode::timer_callback, this));
@@ -63,15 +63,18 @@ class RepubNode : public rclcpp::Node {
         msg_ready_ = true;
     }
 
-    void cmd_vel_callback(const geometry_msgs::msg::Twist::SharedPtr msg) {
-        last_cmd_vel_msg_ = *msg;
-        msg_ready_ = true;
-    }
+    // void cmd_vel_callback(const geometry_msgs::msg::Twist::SharedPtr msg) {
+    //     last_cmd_vel_msg_ = *msg;
+    //     msg_ready_ = true;
+    // }
 
     void timer_callback() {
-        if (msg_ready_) { pub_range1_sensor_->publish(last_range1_msg_);
+        if (msg_ready_) {
+            pub_range1_sensor_->publish(last_range1_msg_);
             pub_range2_sensor_->publish(last_range2_msg_);
-            pub_cmd_vel_->publish(last_cmd_vel_msg_);
+            pub_range3_sensor_->publish(last_range3_msg_);
+            pub_range4_sensor_->publish(last_range4_msg_);
+            // pub_cmd_vel_->publish(last_cmd_vel_msg_);
             msg_ready_ = false;
         }
     }
@@ -88,15 +91,15 @@ class RepubNode : public rclcpp::Node {
     rclcpp::Publisher<sensor_msgs::msg::Range>::SharedPtr pub_range4_sensor_;
     rclcpp::Subscription<sensor_msgs::msg::Range>::SharedPtr sub_range4_;
 
-    rclcpp::Publisher<geometry_msgs::msg::Twist>::SharedPtr pub_cmd_vel_;
-    rclcpp::Subscription<geometry_msgs::msg::Twist>::SharedPtr sub_cmd_vel_;
+    // rclcpp::Publisher<geometry_msgs::msg::Twist>::SharedPtr pub_cmd_vel_;
+    // rclcpp::Subscription<geometry_msgs::msg::Twist>::SharedPtr sub_cmd_vel_;
 
     rclcpp::TimerBase::SharedPtr timer_;
     sensor_msgs::msg::Range last_range1_msg_;
     sensor_msgs::msg::Range last_range2_msg_;
     sensor_msgs::msg::Range last_range3_msg_;
     sensor_msgs::msg::Range last_range4_msg_;
-    geometry_msgs::msg::Twist last_cmd_vel_msg_;
+    // geometry_msgs::msg::Twist last_cmd_vel_msg_;
     bool msg_ready_;
 };
 
