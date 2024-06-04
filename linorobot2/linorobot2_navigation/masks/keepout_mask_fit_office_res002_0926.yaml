@@ -1,4 +1,4 @@
-image: keepout_mask.fit_office_res002_0926.pgm
+image: keepout_mask_fit_office_res002_0926.pgm
 mode: trinary
 resolution: 0.02
 origin: [-6.43, -1.53, 0]

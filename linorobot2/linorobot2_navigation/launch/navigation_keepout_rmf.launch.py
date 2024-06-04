@@ -59,7 +59,7 @@ def generate_launch_description():
     maskloc = os.path.join(get_package_share_directory(package_name), 'masks')
     mask_arg = DeclareLaunchArgument(
         "mask",
-        default_value=[f'{maskloc}/', "keepout_mask.", LaunchConfiguration("map_name"), ".yaml"],
+        default_value=[f'{maskloc}/', "keepout_mask_", LaunchConfiguration("map_name"), ".yaml"],
         description="mask file for keepout layer",
     )
 
