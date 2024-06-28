@@ -42,7 +42,8 @@ def generate_launch_description():
 
     params_file_path = get_path(package_name, ["config", robot_base, "navigation.yaml"])
     nav2_launch_path = get_path("nav2_bringup", ["launch", "bringup_launch.py"])
-    rviz_config_path = get_path("nav2_bringup", ["rviz", "nav2_default_view.rviz"])
+    # rviz_config_path = get_path("nav2_bringup", ["rviz", "nav2_default_view.rviz"])
+    # rviz_config_path = "/home/zealzel/.rviz2/nav2_camera.rviz"
 
     use_sim_arg = DeclareLaunchArgument(
         name="sim",
@@ -51,6 +52,13 @@ def generate_launch_description():
     )
     use_rviz_arg = DeclareLaunchArgument(
         name="rviz", default_value="false", description="Run rviz"
+    )
+    rviz_config_arg = DeclareLaunchArgument(
+        "rviz_config",
+        default_value=get_path("nav2_bringup", ["rviz", "nav2_default_view.rviz"]),
+        description=(
+            "Full path to the ROS2 rviz config file"
+        ),
     )
     params_arg = DeclareLaunchArgument(
         "params_file",
@@ -85,7 +93,8 @@ def generate_launch_description():
         executable="rviz2",
         name="rviz2",
         output="screen",
-        arguments=["-d", rviz_config_path],
+        # arguments=["-d", rviz_config_path],
+        arguments=["-d", LaunchConfiguration("rviz_config")],
         condition=IfCondition(LaunchConfiguration("rviz")),
         parameters=[{"use_sim_time": LaunchConfiguration("sim")}],
     )
@@ -100,6 +109,7 @@ def generate_launch_description():
         [
             use_sim_arg,
             use_rviz_arg,
+            rviz_config_arg,
             params_arg,
             map_arg, map_sim_arg,
             nav2_bringup,

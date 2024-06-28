@@ -36,6 +36,8 @@ def generate_launch_description():
     rviz_config_path = PathJoinSubstitution(
         [FindPackageShare("linorobot2_description"), "rviz", "description.rviz"]
     )
+    remappings = [('/tf', 'tf'),
+                  ('/tf_static', 'tf_static')]
 
     return LaunchDescription(
         [
@@ -84,6 +86,7 @@ def generate_launch_description():
                         ),
                     }
                 ],
+                remappings=remappings,
             ),
             Node(
                 package="rviz2",
