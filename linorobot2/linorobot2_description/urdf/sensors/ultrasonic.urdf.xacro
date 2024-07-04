@@ -72,7 +72,7 @@
           </ros>
           <output_type>sensor_msgs/Range</output_type>
           <topicName>${topic_name}</topicName>
-          <frameName>${frame_id}</frameName>
+          <frame_name>${frame_id}</frame_name>
           <gaussianNoise>0.000</gaussianNoise>
           <alwaysOn>true</alwaysOn>.
           <updateRate>10</updateRate>

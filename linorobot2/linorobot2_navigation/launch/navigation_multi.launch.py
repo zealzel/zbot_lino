@@ -23,7 +23,6 @@ def include_launch_description(launch_path, **kwargs):
 
 
 def generate_launch_description():
-    print("OKEVINLEE!!!")
     package_name = "linorobot2_navigation"
 
     # simulation only: 2wd|4wd|macanum|zbotlinolong
@@ -63,7 +62,8 @@ def generate_launch_description():
     )
     rviz_config_arg = DeclareLaunchArgument(
         "rviz_config",
-        default_value=get_path(package_name, ["rviz", "multi_nav2_default_view.rviz"]),
+        default_value=get_path(package_name, ["rviz", "multi_nav2_range.rviz"]),
+        # default_value=get_path(package_name, ["rviz", "multi_nav2.rviz"]),
         # default_value=get_path("nav2_bringup", ["rviz", "nav2_default_view.rviz"]),
         description=("Full path to the ROS2 rviz config file"),
     )
@@ -153,10 +153,18 @@ def generate_launch_description():
         name="repub_node",
         namespace=LaunchConfiguration("namespace"),
         output="screen",
+        remappings=[
+            ("/range1/data", "range1/data"),
+            ("/range2/data", "range2/data"),
+            ("/range3/data", "range3/data"),
+            ("/range4/data", "range4/data"),
+            ("/range1_sensor", "local_costmap/range1_sensor"),
+            ("/range2_sensor", "local_costmap/range2_sensor"),
+            ("/range3_sensor", "local_costmap/range3_sensor"),
+            ("/range4_sensor", "local_costmap/range4_sensor"),
+        ],
     )
-    print("AAAA")
     print(LaunchConfiguration("namespace"))
-    print("BBB")
     return LaunchDescription(
         [
             namespace_arg,
