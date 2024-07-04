@@ -1,0 +1,5 @@
+# === robot bringup ===
+ros2 launch linorobot2_gazebo gazebo_multi_robots.launch.py
+
+# === robot navigation ===
+ros2 launch linorobot2_navigation navigation.launch.py sim:=true rviz:=true use_namespace:=true namespace:=/robot1

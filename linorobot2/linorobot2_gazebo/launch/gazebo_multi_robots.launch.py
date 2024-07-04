@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import os
+from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
 from launch.actions import (
     DeclareLaunchArgument,
@@ -29,10 +31,22 @@ def get_path(package_name, subpaths):
 
 def generate_launch_description():
     robots = [
-        {'name': 'robot1', 'x_pos': 0.0, 'y_pos': 0.5, 'z_pos': 0.01,
-            "color_name" : 'Yellow', "color_rgb" : "1 1 0 1"},
-        {'name': 'robot2', 'x_pos': 0.0, 'y_pos': -0.5, 'z_pos': 0.01,
-            "color_name" : 'Blue', "color_rgb" : "0 0 1 1"},
+        {
+            "name": "robot1",
+            "x_pos": 0.0,
+            "y_pos": 0.5,
+            "z_pos": 0.01,
+            "color_name": "Yellow",
+            "color_rgb": "1 1 0 1",
+        },
+        {
+            "name": "robot2",
+            "x_pos": 0.0,
+            "y_pos": -0.5,
+            "z_pos": 0.01,
+            "color_name": "Blue",
+            "color_rgb": "0 0 1 1",
+        },
     ]
 
     arrNodes = []
@@ -42,7 +56,9 @@ def generate_launch_description():
     # world_path = get_path("linorobot2_gazebo", ["worlds", f"playground.world"])
     world_path = get_path("turtlebot3_gazebo", ["worlds", "turtlebot3_world.world"])
 
-    description_launch_path = get_path("linorobot2_description", ["launch", "description.launch.py"])
+    description_launch_path = get_path(
+        "linorobot2_description", ["launch", "description.launch.py"]
+    )
     gazebo_launch_path = get_path("gazebo_ros", ["launch", "gazebo.launch.py"])
     ekf_config_path = get_path("linorobot2_base", ["config", "ekf.yaml"])
 
@@ -63,9 +79,12 @@ def generate_launch_description():
     )
     arrNodes.append(gazebo)
 
-
+    #
+    # arrNodes.append(map_server)
+    # arrNodes.append(map_server_lifecyle)
+    #
     for robot in robots:
-        namespace = f"/{robot['name']}" if robot['name'] else ""
+        namespace = f"/{robot['name']}" if robot["name"] else ""
 
         description = IncludeLaunchDescription(
             PythonLaunchDescriptionSource(description_launch_path),
@@ -82,11 +101,16 @@ def generate_launch_description():
             executable="spawn_entity.py",
             namespace=namespace,
             arguments=[
-                "-topic", f"{namespace}/robot_description",
-                "-entity", robot['name'],
-                "-robot_namespace", robot['name'],
-                "-x", str(robot['x_pos']),
-                "-y", str(robot['y_pos']),
+                "-topic",
+                f"{namespace}/robot_description",
+                "-entity",
+                robot["name"],
+                "-robot_namespace",
+                robot["name"],
+                "-x",
+                str(robot["x_pos"]),
+                "-y",
+                str(robot["y_pos"]),
             ],
             output="screen",
         )
@@ -96,6 +120,7 @@ def generate_launch_description():
             package="linorobot2_gazebo",
             executable="command_timeout.py",
             name="command_timeout",
+            namespace=namespace,
         )
         arrNodes.append(command_timeout)
 
@@ -106,7 +131,12 @@ def generate_launch_description():
             namespace=namespace,
             output="screen",
             parameters=[{"use_sim_time": use_sim_time}, ekf_config_path],
-            remappings=[("odometry/filtered", "odom")],
+            # remappings=[("odometry/filtered", "odom")],
+            remappings=[
+                ("odometry/filtered", "odom"),
+                ("/tf", "tf"),
+                ("/tf_static", "tf_static"),
+            ],
         )
         arrNodes.append(robot_localization)
 
