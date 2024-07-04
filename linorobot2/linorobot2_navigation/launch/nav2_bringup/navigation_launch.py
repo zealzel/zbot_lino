@@ -67,6 +67,7 @@ def generate_launch_description():
         # ('/scan', [namespace, '/scan'])],
         ("/scan1", [namespace, "/scan1"]),
         ("/scan2", [namespace, "/scan2"]),
+        ("/odom", "odom"),
     ]
 
     # Create our own temporary YAML files that include substitutions

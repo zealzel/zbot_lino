@@ -31,7 +31,6 @@ def generate_launch_description():
     # robot_base = os.getenv('LINOROBOT2_BASE', 'zbotlino')
     # robot_base = os.getenv('LINOROBOT2_BASE', 'zbotlinosick2')
     robot_base = os.getenv("LINOROBOT2_BASE", "zbotlino2")
-    package_name = "linorobot2_navigation"
 
     # the footprint of both is the same
     if robot_base in ["zbotlino", "zbotlinosick1"]:
@@ -64,8 +63,8 @@ def generate_launch_description():
     )
     rviz_config_arg = DeclareLaunchArgument(
         "rviz_config",
-        default_value=get_path("nav2_bringup", ["rviz", "nav2_default_view.rviz"]),
-        # default_value=get_path(package_name, ["rviz", "empty.rviz"]),
+        default_value=get_path(package_name, ["rviz", "multi_nav2_default_view.rviz"]),
+        # default_value=get_path("nav2_bringup", ["rviz", "nav2_default_view.rviz"]),
         description=("Full path to the ROS2 rviz config file"),
     )
 
