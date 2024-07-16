@@ -330,9 +330,9 @@ global_costmap:
       obstacle_layer:
         plugin: "nav2_costmap_2d::ObstacleLayer"
         enabled: True
-        observation_sources: scan
+        observation_sources: scan1 scan2
         scan:
-          topic: /scan
+          topic: /scan1
           max_obstacle_height: 2.0
           clearing: True
           marking: True
