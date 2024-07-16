@@ -1,5 +1,14 @@
 # === robot bringup ===
 ros2 launch linorobot2_gazebo gazebo_multi_robots.launch.py
 
+
+# === launch map server ===
+ros2 launch articubot_one map_server.launch.py sim:=true
+
+
 # === robot navigation ===
+# Without keepout zone
 ros2 launch linorobot2_navigation navigation_multi.launch.py sim:=true rviz:=true use_namespace:=true namespace:=/robot1
+
+# With keepout zone
+ros2 launch linorobot2_navigation navigation_keepout_multi.launch.py sim:=true rviz:=true use_namespace:=true namespace:=/robot1
