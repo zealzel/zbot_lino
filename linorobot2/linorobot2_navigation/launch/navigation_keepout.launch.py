@@ -24,22 +24,23 @@ def generate_launch_description():
 
     # simulation only: 2wd|4wd|macanum|zbotlinolong
     # real robot: zbotlino(use rplidar)|zbotlinosick1
-    robot_base = os.getenv("LINOROBOT2_BASE", "zbotlino")
+    robot_base = os.getenv("LINOROBOT2_BASE", "zbotlino2")
 
     # the footprint of both is the same
     if robot_base in ["zbotlino", "zbotlinosick1"]:
         robot_base = "zbotlino"
 
-    #default_map_path = get_path("fitrobot", ["maps", "office_res002_0914.yaml"])
+    # default_map_path = get_path("fitrobot", ["maps", "office_res002_0914.yaml"])
     default_map_path = get_path("fitrobot", ["maps", "lino2_office_20240129.yaml"])
 
-    #default_map_path = get_path("fitrobot", ["maps", "office_res002_0523.yaml"])
+    # default_map_path = get_path("fitrobot", ["maps", "office_res002_0523.yaml"])
     default_map_path_sim = get_path(package_name, ["maps", "turtlebot3_world.yaml"])
 
     default_mask_path = get_path(
-        #"fitrobot", ["masks", "keepout_mask_office_res002_0523.yaml"]
-        #"fitrobot", ["masks", "keepout_mask_office_res002_0914.yaml"]
-        "fitrobot", ["masks", "keepout_mask_lino2_office_20240129.yaml"]
+        # "fitrobot", ["masks", "keepout_mask_office_res002_0523.yaml"]
+        # "fitrobot", ["masks", "keepout_mask_office_res002_0914.yaml"]
+        "fitrobot",
+        ["masks", "keepout_mask_lino2_office_20240129.yaml"],
     )
     default_mask_path_sim = get_path(
         package_name, ["masks", "keepout_mask_turtlebot3_world.yaml"]
@@ -144,8 +145,10 @@ def generate_launch_description():
             use_sim_arg,
             use_rviz_arg,
             keepout_params_arg,
-            map_arg, map_sim_arg,
-            mask_arg, mask_sim_arg,
+            map_arg,
+            map_sim_arg,
+            mask_arg,
+            mask_sim_arg,
             params_arg,
             nav2_bringup,
             costmap_filter_info_delayed,
