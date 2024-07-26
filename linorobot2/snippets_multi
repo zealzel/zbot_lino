@@ -3,7 +3,7 @@ ros2 launch linorobot2_gazebo gazebo_multi_robots.launch.py
 
 
 # === launch map server ===
-ros2 launch articubot_one map_server.launch.py sim:=true
+ros2 launch fitrobot map_server.launch.py sim:=true
 
 
 # === robot navigation ===
