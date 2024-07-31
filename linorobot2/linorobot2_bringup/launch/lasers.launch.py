@@ -54,6 +54,7 @@ def generate_launch_description():
         DeclareLaunchArgument(name="host_ip", default_value="192.168.1.3"),
         DeclareLaunchArgument(name='sensor', default_value='nanscan3'),
         DeclareLaunchArgument(name='topic_name', default_value='scan'),
+        DeclareLaunchArgument(name="namespace", default_value=""),
         Node(
             condition=LaunchConfigurationEquals('sensor', 'ydlidar'),
             package='ydlidar_ros2_driver',

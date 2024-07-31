@@ -14,45 +14,49 @@ def generate_launch_description():
     namespace = "/lino2"
 
     laser_launch_path = PathJoinSubstitution(
-        [FindPackageShare('linorobot2_bringup'), 'launch', 'lasers.launch.py']
+        [FindPackageShare("linorobot2_bringup"), "launch", "lasers.launch.py"]
     )
 
     depth_launch_path = PathJoinSubstitution(
-        [FindPackageShare('linorobot2_bringup'), 'launch', 'depth.launch.py']
+        [FindPackageShare("linorobot2_bringup"), "launch", "depth.launch.py"]
     )
 
-    return LaunchDescription([
-
-        # front lidar laser
-        IncludeLaunchDescription(
-            PythonLaunchDescriptionSource(laser_launch_path),
-            launch_arguments={
-                'node_name': "sick_safetyscanners2_node_1",
-                'sensor': laser_sensor_name,
-                'sensor_ip': '192.168.1.2',
-                'host_ip': '192.168.1.3',
-                'topic_name': 'scan1',
-                'frame_id': 'laser1'
-            }.items()
-        ),
-
-        # back lidar laser
-        IncludeLaunchDescription(
-            PythonLaunchDescriptionSource(laser_launch_path),
-            launch_arguments={
-                'node_name': "sick_safetyscanners2_node_2",
-                'sensor': laser_sensor_name,
-                'sensor_ip': '192.168.1.4',
-                'host_ip': '192.168.1.12',
-                'topic_name': 'scan2',
-                'frame_id': 'laser2'
-            }.items()
-        ),
-
-        IncludeLaunchDescription(
-            PythonLaunchDescriptionSource(depth_launch_path),
-            condition=IfCondition(PythonExpression(['"" != "', depth_sensor_name, '"'])),
-            launch_arguments={'sensor': depth_sensor_name}.items()
-        ),
-
-    ])
+    return LaunchDescription(
+        [
+            # front lidar laser
+            IncludeLaunchDescription(
+                PythonLaunchDescriptionSource(laser_launch_path),
+                launch_arguments={
+                    "node_name": "sick_safetyscanners2_node_1",
+                    "sensor": laser_sensor_name,
+                    "sensor_ip": "192.168.1.2",
+                    "host_ip": "192.168.1.3",
+                    # 'topic_name': 'scan1',
+                    "topic_name": f"{namespace}/scan1",
+                    "frame_id": "laser1",
+                    "namespace": namespace,
+                }.items(),
+            ),
+            # back lidar laser
+            IncludeLaunchDescription(
+                PythonLaunchDescriptionSource(laser_launch_path),
+                launch_arguments={
+                    "node_name": "sick_safetyscanners2_node_2",
+                    "sensor": laser_sensor_name,
+                    "sensor_ip": "192.168.1.4",
+                    "host_ip": "192.168.1.12",
+                    # "topic_name": "scan2",
+                    "topic_name": f"{namespace}/scan2",
+                    "frame_id": "laser2",
+                    "namespace": namespace,
+                }.items(),
+            ),
+            IncludeLaunchDescription(
+                PythonLaunchDescriptionSource(depth_launch_path),
+                condition=IfCondition(
+                    PythonExpression(['"" != "', depth_sensor_name, '"'])
+                ),
+                launch_arguments={"sensor": depth_sensor_name}.items(),
+            ),
+        ]
+    )
