@@ -12,3 +12,14 @@ ros2 launch linorobot2_navigation navigation_multi.launch.py sim:=true rviz:=tru
 
 # With keepout zone
 ros2 launch linorobot2_navigation navigation_keepout_multi.launch.py sim:=true rviz:=true use_namespace:=true namespace:=/robot1
+
+
+# === real ===
+
+ros2 launch linorobot2_bringup bringup_multi.launch.py
+
+ros2 launch fitrobot map_server.launch.py sim:=true
+
+ros2 launch linorobot2_navigation navigation_multi.launch.py sim:=false rviz:=true use_namespace:=true namespace:=/lino2 \
+    map:=$(ros2 pkg prefix fitrobot)/share/fitrobot/maps/office_res002_0914.yaml \
+    params_file:=$(ros2 pkg prefix linorobot2_navigation)/share/linorobot2_navigation/config/zbotlino/navigation.yaml

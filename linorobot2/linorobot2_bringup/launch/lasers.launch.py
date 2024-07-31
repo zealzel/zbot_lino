@@ -42,8 +42,9 @@ def generate_launch_description():
             "topic_name": LaunchConfiguration("topic_name"),
             "sensor_ip": LaunchConfiguration("sensor_ip"),
             "host_ip": LaunchConfiguration("host_ip"),
+            "namespace": LaunchConfiguration("namespace", default=""),
         }.items(),
-        condition=LaunchConfigurationEquals('sensor', 'nanoscan3'),
+        condition=LaunchConfigurationEquals("sensor", "nanoscan3"),
     )
 
     return LaunchDescription([

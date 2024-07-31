@@ -9,8 +9,9 @@ from launch_ros.actions import Node
 
 
 def generate_launch_description():
-    laser_sensor_name = os.getenv('LINOROBOT2_LASER_SENSOR', 'nanoscan3')
-    depth_sensor_name = os.getenv('LINOROBOT2_DEPTH_SENSOR', '')
+    laser_sensor_name = os.getenv("LINOROBOT2_LASER_SENSOR", "nanoscan3")
+    depth_sensor_name = os.getenv("LINOROBOT2_DEPTH_SENSOR", "")
+    namespace = "/lino2"
 
     laser_launch_path = PathJoinSubstitution(
         [FindPackageShare('linorobot2_bringup'), 'launch', 'lasers.launch.py']
