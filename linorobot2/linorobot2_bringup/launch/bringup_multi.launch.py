@@ -10,6 +10,13 @@ from launch_ros.actions import Node
 from launch_ros.substitutions import FindPackageShare
 
 
+# In linorobot2_hardware/firmware/src/firmware.ino
+# Change the following line
+# RCCHECK(rclc_node_init_default(&node, "linorobot_base_node", "", &support));
+# into
+# RCCHECK(rclc_node_init_default(&node, "linorobot_base_node", "/lino2", &support));
+
+
 def get_path(package_name, subpaths):
     return PathJoinSubstitution([FindPackageShare(package_name)] + subpaths)
 
