@@ -21,7 +21,8 @@ from launch.actions import DeclareLaunchArgument, EmitEvent, RegisterEventHandle
 from launch.conditions import IfCondition, UnlessCondition
 from launch.event_handlers import OnProcessExit
 from launch.events import Shutdown
-from launch.substitutions import LaunchConfiguration
+from launch.substitutions import LaunchConfiguration, PathJoinSubstitution
+from launch_ros.substitutions import FindPackageShare
 from launch_ros.actions import Node
 from nav2_common.launch import ReplaceString
 
@@ -53,7 +54,7 @@ def generate_launch_description():
 
     declare_rviz_config_file_cmd = DeclareLaunchArgument(
         "rviz_config",
-        default_value=os.path.join(bringup_dir, "rviz", "nav2_default_view.rviz"),
+        default_value=PathJoinSubstitution([FindPackageShare('linorobot2_navigation'), 'rviz', 'multi_nav2.rviz']),
         description="Full path to the RVIZ config file to use",
     )
 
