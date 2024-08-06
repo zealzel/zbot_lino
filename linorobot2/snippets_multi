@@ -14,6 +14,10 @@ ros2 launch linorobot2_navigation navigation_multi.launch.py sim:=true rviz:=tru
 ros2 launch linorobot2_navigation navigation_keepout_multi.launch.py sim:=true rviz:=true use_namespace:=true namespace:=/robot1
 
 
+# === stand-alone rviz ===
+ros2 launch linorobot2_navigation rviz_launch.py use_sim_time:=true use_namespace:=true namespace:=/robot1
+
+
 # === real ===
 
 ros2 launch linorobot2_bringup bringup_multi.launch.py
