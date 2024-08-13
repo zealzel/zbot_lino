@@ -32,6 +32,7 @@ WORLD_INFO = {
     "turtlebot3_world": {"ext": "world", "x": 0.5, "y": 0.5},
     "turtlebot3_house": {"ext": "world", "x": -3.0, "y": 1.0},
     "room_with_tags": {"ext": "sdf", "x": 1.0, "y": 1.0},
+    "obstacles": {"ext": "world", "x": 0.0, "y": 0.0},
 }
 
 
