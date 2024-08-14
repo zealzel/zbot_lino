@@ -19,7 +19,7 @@ The default positions for these worlds
 You can start with worldname without full path. It will use the default positions.
 
 ```bash
-ros2 launch linorobot2_gazebo launch_sim.launch.py worldname:=room_with_tags
+ros2 launch linorobot2_gazebo launch_sim.py worldname:=room_with_tags
 ```
 
 ## launch with worldpath argument
@@ -27,7 +27,7 @@ ros2 launch linorobot2_gazebo launch_sim.launch.py worldname:=room_with_tags
 You can also provide the world full path using worlpath argument
 
 ```bash
-ros2 launch linorobot2_gazebo launch_sim.launch.py worldpath:=/path/to/file/example_world.world
+ros2 launch linorobot2_gazebo launch_sim.py worldpath:=/path/to/file/example_world.world
 ```
 
 > [notice] Only one of worldname or worldpath can be set at the same time
@@ -37,5 +37,5 @@ ros2 launch linorobot2_gazebo launch_sim.launch.py worldpath:=/path/to/file/exam
 You can define postions using x & y arguments
 
 ```bash
-ros2 launch linorobot2_gazebo launch_sim.launch.py worldname:=turtlebot3_world x:=0.5 y:=0.5
+ros2 launch linorobot2_gazebo launch_sim.py worldname:=turtlebot3_world x:=0.5 y:=0.5
 ```

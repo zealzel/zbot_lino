@@ -7,7 +7,7 @@ This launch file is for single robot.
 Once you provide the worldname argument, the map will be decided.
 
 ```bash
-ros2 launch linorobot2_navigation launch_nav.launch.py sim:=true rviz:=true worldname:=turtlebot3_house
+ros2 launch linorobot2_navigation launch_nav.py sim:=true rviz:=true worldname:=turtlebot3_house
 ```
 
 Currently, the world-map relationships is as follows. This maps are in fitrobot/maps/sim directory

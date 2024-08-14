@@ -26,7 +26,7 @@ def get_path(package_name, subpaths=None):
 # 2. https://www.robotsfan.com/posts/7a5950c4.html
 
 # usages
-# ros2 launch linorobot2_gazebo launch_sim.launch.py worldname:=room_with_tags x:=0.5 y:=0.5
+# ros2 launch linorobot2_gazebo launch_sim.py worldname:=room_with_tags x:=0.5 y:=0.5
 
 WORLD_INFO = {
     "turtlebot3_world": {"ext": "world", "x": 0.5, "y": 0.5},
@@ -34,6 +34,64 @@ WORLD_INFO = {
     "room_with_tags": {"ext": "sdf", "x": 1.0, "y": 1.0},
     "obstacles": {"ext": "world", "x": 0.0, "y": 0.0},
 }
+
+
+def launch_each(robotname, position):
+    namespace = f"/{robotname}"
+    arrNode = []
+    description_launch_path = get_path(
+        "linorobot2_description", ["launch", "description.launch.py"]
+    )
+    ekf_config_path = get_path("linorobot2_base", ["config", "ekf.yaml"])
+
+    description = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource(description_launch_path),
+        launch_arguments={
+            "namespace": namespace,
+            "use_sim_time": "true",
+            "publish_joints": "false",
+        }.items(),
+    )
+    x, y = position
+    print("x_pos", x)
+    print("y_pos", y)
+    spawn_entity = Node(
+        package="gazebo_ros",
+        executable="spawn_entity.py",
+        namespace=namespace,
+        arguments=[
+            "-topic", f"{namespace}/robot_description",
+            "-entity", robotname,
+            "-robot_namespace", robotname,
+            "-x", str(x),
+            "-y", str(y),
+        ],
+        output="screen",
+    )
+    command_timeout = Node(
+        package="linorobot2_gazebo",
+        executable="command_timeout.py",
+        name="command_timeout",
+        namespace=namespace,
+    )
+    robot_localization = Node(
+        package="robot_localization",
+        executable="ekf_node",
+        name="ekf_filter_node",
+        namespace=namespace,
+        output="screen",
+        parameters=[{"use_sim_time": "true"}, ekf_config_path],
+        remappings=[
+            ("odometry/filtered", "odom"),
+            ("/tf", "tf"),
+            ("/tf_static", "tf_static"),
+        ],
+    )
+    arrNode.append(description)
+    arrNode.append(spawn_entity)
+    arrNode.append(command_timeout)
+    arrNode.append(robot_localization)
+    return arrNode
 
 
 def generate_launch_description():
@@ -90,59 +148,16 @@ def generate_launch_description():
             y = context.launch_configurations.get("y", str(WORLD_INFO[worldname]["y"]))
         return [SetLaunchConfiguration("y", y)]
 
-    use_sim_time = True
-    description_launch_path = get_path(
-        "linorobot2_description", ["launch", "description.launch.py"]
-    )
     gazebo_launch_path = get_path("gazebo_ros", ["launch", "gazebo.launch.py"])
-    ekf_config_path = get_path("linorobot2_base", ["config", "ekf.yaml"])
-
     worldname_arg = OpaqueFunction(function=worldname_get)
     worldpath_arg = OpaqueFunction(function=worldpath_get)
     x_arg = OpaqueFunction(function=x_position)
     y_arg = OpaqueFunction(function=y_position)
-
-    description = IncludeLaunchDescription(
-        PythonLaunchDescriptionSource(description_launch_path),
-        launch_arguments={
-            "use_sim_time": str(use_sim_time),
-            "publish_joints": "false",
-        }.items(),
-    )
-
     gazebo = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(gazebo_launch_path),
         launch_arguments={
             "world": LaunchConfiguration("world"),
         }.items(),
-    )
-    spawn_entity = Node(
-        package="gazebo_ros",
-        executable="spawn_entity.py",
-        arguments=[
-            "-topic",
-            "robot_description",
-            "-entity",
-            "zbot_lino",
-            "-x",
-            LaunchConfiguration("x"),
-            "-y",
-            LaunchConfiguration("y"),
-        ],
-        output="screen",
-    )
-    command_timeout = Node(
-        package="linorobot2_gazebo",
-        executable="command_timeout.py",
-        name="command_timeout",
-    )
-    robot_localization = Node(
-        package="robot_localization",
-        executable="ekf_node",
-        name="ekf_filter_node",
-        output="screen",
-        parameters=[{"use_sim_time": use_sim_time}, ekf_config_path],
-        remappings=[("odometry/filtered", "odom")],
     )
     return LaunchDescription(
         [
@@ -153,10 +168,8 @@ def generate_launch_description():
             y_arg,
             worldname_arg,
             worldpath_arg,
-            description,
             gazebo,
-            spawn_entity,
-            command_timeout,
-            robot_localization,
         ]
+        + launch_each("robot1", (0.0, 0.5))
+        + launch_each("robot2", (0.0, -0.5))
     )
