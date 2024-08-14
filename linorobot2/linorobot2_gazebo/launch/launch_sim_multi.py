@@ -48,13 +48,12 @@ def launch_each(robotname, position):
         PythonLaunchDescriptionSource(description_launch_path),
         launch_arguments={
             "namespace": namespace,
+            # "use_sim_time": str(use_sim_time),
             "use_sim_time": "true",
             "publish_joints": "false",
         }.items(),
     )
     x, y = position
-    print("x_pos", x)
-    print("y_pos", y)
     spawn_entity = Node(
         package="gazebo_ros",
         executable="spawn_entity.py",
@@ -80,7 +79,7 @@ def launch_each(robotname, position):
         name="ekf_filter_node",
         namespace=namespace,
         output="screen",
-        parameters=[{"use_sim_time": "true"}, ekf_config_path],
+        parameters=[{"use_sim_time": True}, ekf_config_path],
         remappings=[
             ("odometry/filtered", "odom"),
             ("/tf", "tf"),

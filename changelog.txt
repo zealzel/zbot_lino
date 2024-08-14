@@ -1,0 +1,9 @@
+2024/8/14 15:40
+feat: create launch_nav_multi.py to integrate all cases
+- This file is almost identical to navigation_keepout_multi.launch.py
+- see summary.md in fitrobot package
+fix: ekf node not launch in launch_sim_multi.py
+  Line 
+    parameters=[{"use_sim_time": "true"}, ekf_config_path],
+  shoudl be 
+    parameters=[{"use_sim_time": True}, ekf_config_path],
