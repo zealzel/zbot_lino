@@ -41,7 +41,7 @@
   </xacro:property>
 
   <xacro:property name="camera_rear">
-    <origin xyz="${offset_x-0.3} 0.0 0.045" rpy="0 0 3.14159"/>
+    <origin xyz="${offset_x-0.35} 0.0 0.045" rpy="0 0 3.14159"/>
     <!-- <origin xyz="${offset_x-0.3} 0.0 0.045" rpy="0 3.14159 0"/> -->
   </xacro:property>
 
