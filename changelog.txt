@@ -1,3 +1,8 @@
+2024/8/14 16:20
+fix: range topic remapping bug fixed
+ - nav.launch.py: add repub node remappings to fix topic namespace bug
+ - rviz.launch.py: use correct default rviz_config file
+
 2024/8/14 15:40
 feat: create launch_nav_multi.py to integrate all cases
 - This file is almost identical to navigation_keepout_multi.launch.py

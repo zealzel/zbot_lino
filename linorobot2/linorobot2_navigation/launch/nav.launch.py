@@ -92,9 +92,19 @@ def generate_launch_description():
         package=package_name,
         executable="repub_node",
         name="repub_node",
+        namespace=LaunchConfiguration("namespace"),
         output="screen",
+        remappings=[
+            ("/range1/data", "range1/data"),
+            ("/range2/data", "range2/data"),
+            ("/range3/data", "range3/data"),
+            ("/range4/data", "range4/data"),
+            ("/range1_sensor", "local_costmap/range1_sensor"),
+            ("/range2_sensor", "local_costmap/range2_sensor"),
+            ("/range3_sensor", "local_costmap/range3_sensor"),
+            ("/range4_sensor", "local_costmap/range4_sensor"),
+        ],
     )
-
     # Temporary node to republish the range1/data & range2/data to range1_sensor & range2_sensor
     return LaunchDescription(
         [

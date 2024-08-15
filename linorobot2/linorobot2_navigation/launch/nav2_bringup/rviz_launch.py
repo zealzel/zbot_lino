@@ -54,7 +54,10 @@ def generate_launch_description():
 
     declare_rviz_config_file_cmd = DeclareLaunchArgument(
         "rviz_config",
-        default_value=PathJoinSubstitution([FindPackageShare('linorobot2_navigation'), 'rviz', 'multi_nav2.rviz']),
+        default_value=PathJoinSubstitution(
+            # [FindPackageShare("linorobot2_navigation"), "rviz", "multi_nav2.rviz"]
+            [FindPackageShare("linorobot2_navigation"), "rviz", "multi_nav2_range.rviz"]
+        ),
         description="Full path to the RVIZ config file to use",
     )
 
