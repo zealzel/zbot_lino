@@ -21,8 +21,14 @@ def get_path(package_name, subpaths):
     return PathJoinSubstitution([FindPackageShare(package_name)] + subpaths)
 
 
+def include_launch_description(launch_path, **kwargs):
+    return IncludeLaunchDescription(
+        PythonLaunchDescriptionSource(launch_path), launch_arguments=kwargs.items()
+    )
+
+
 def generate_launch_description():
-    # namespace = "/lino2"
+    namespace = "/lino2"
 
     # real robot: zbotlino(use rplidar)|zbotlinosick1|zbotlinosick2
     robot_base = os.getenv("LINOROBOT2_BASE", "zbotlinosick2")
@@ -38,63 +44,52 @@ def generate_launch_description():
         "linorobot2_description", ["launch", "description.launch.py"]
     )
     ekf_config_path = get_path("linorobot2_base", ["config", "ekf.yaml"])
-
-    namespace_arg = DeclareLaunchArgument(
-        name="namespace",
-        default_value="",
-        description="namespace",
-    )
-    base_serial_port_arg = DeclareLaunchArgument(
-        name="base_serial_port",
-        default_value="/dev/ttyACM0",
-        description="Linorobot Base Serial Port",
-    )
-    joy_arg = DeclareLaunchArgument(
-        name="joy", default_value="false", description="Use Joystick"
-    )
-
     ekf = Node(
         package="robot_localization",
         executable="ekf_node",
         name="ekf_filter_node",
         output="screen",
         parameters=[ekf_config_path],
-        namespace=LaunchConfiguration("namespace"),
+        namespace=namespace,
         remappings=[
             ("odometry/filtered", "odom"),
             ("/tf", "tf"),
             ("/tf_static", "tf_static"),
         ],
     )
-
-    sensor_launch = IncludeLaunchDescription(
-        PythonLaunchDescriptionSource(sensors_launch_path),
-        launch_arguments={
-            "namespace": LaunchConfiguration("namespace"),
-        }.items(),
-    )
-    description_launch = IncludeLaunchDescription(
-        PythonLaunchDescriptionSource(description_launch_path),
-        launch_arguments={
-            "namespace": LaunchConfiguration("namespace"),
-        }.items(),
-    )
     micro_ros_agent = Node(
         package="micro_ros_agent",
         executable="micro_ros_agent",
         name="micro_ros_agent",
         output="screen",
-        namespace=LaunchConfiguration("namespace"),
+        namespace=namespace,
         arguments=["serial", "--dev", LaunchConfiguration("base_serial_port")],
     )
     return LaunchDescription(
         [
-            base_serial_port_arg,
-            joy_arg,
-            namespace_arg,
-            description_launch,
-            sensor_launch,
+            DeclareLaunchArgument(
+                name="base_serial_port",
+                default_value="/dev/ttyACM0",
+                description="Linorobot Base Serial Port",
+            ),
+            DeclareLaunchArgument(
+                name="joy", default_value="false", description="Use Joystick"
+            ),
             ekf,
+            # include_launch_description(description_launch_path, namespace=namespace),
+            # include_launch_description(sensors_launch_path, namespace=namespace),
+            IncludeLaunchDescription(
+                PythonLaunchDescriptionSource(sensors_launch_path),
+                launch_arguments={
+                    "namespace": namespace,
+                }.items(),
+            ),
+            IncludeLaunchDescription(
+                PythonLaunchDescriptionSource(description_launch_path),
+                launch_arguments={
+                    "namespace": namespace,
+                }.items(),
+            ),
             micro_ros_agent,
         ]
     )
