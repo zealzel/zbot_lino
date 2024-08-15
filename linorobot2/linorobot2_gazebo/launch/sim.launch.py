@@ -1,117 +1,108 @@
-from launch_ros.actions import Node
-from launch import LaunchDescription
-from launch.actions import IncludeLaunchDescription
-from launch.launch_description_sources import (
-    AnyLaunchDescriptionSource,
-    PythonLaunchDescriptionSource,
+import os
+from launch.actions import (
+    DeclareLaunchArgument,
+    IncludeLaunchDescription,
+    SetEnvironmentVariable,
+    OpaqueFunction,
+    SetLaunchConfiguration,
 )
-from launch.conditions import IfCondition
-from launch.actions import DeclareLaunchArgument
-from launch.substitutions import LaunchConfiguration, PathJoinSubstitution, PythonExpression
+from ament_index_python.packages import get_package_share_directory
+from launch import LaunchDescription
+from launch.substitutions import LaunchConfiguration, PathJoinSubstitution
+from launch.launch_description_sources import PythonLaunchDescriptionSource
+from launch_ros.actions import Node
 from launch_ros.substitutions import FindPackageShare
 
 
+def get_path(package_name, subpaths=None):
+    if subpaths:
+        return PathJoinSubstitution([FindPackageShare(package_name)] + subpaths)
+    else:
+        return PathJoinSubstitution([FindPackageShare(package_name)])
+
+
+# use of opaqueFunction
+# 1. https://answers.ros.org/question/404041/ros2-python-launch-using-argument-to-create-file-name-for-a-launch_argument/
+# 2. https://www.robotsfan.com/posts/7a5950c4.html
+
+# usages
+# ros2 launch linorobot2_gazebo launch_sim.py worldname:=room_with_tags x:=0.5 y:=0.5
+
+WORLD_INFO = {
+    "turtlebot3_world": {"ext": "world", "x": 0.5, "y": 0.5},
+    "turtlebot3_house": {"ext": "world", "x": -3.0, "y": 1.0},
+    "room_with_tags": {"ext": "sdf", "x": 1.0, "y": 1.0},
+    "obstacles": {"ext": "world", "x": 0.0, "y": 0.0},
+}
+
+
 def generate_launch_description():
-    use_sim_time = True
-    map_name_arg = DeclareLaunchArgument(
-        "map_name", default_value="fit_office", description="Name of the map"
-    )
-    headless_arg = DeclareLaunchArgument(
-        "headless", default_value="false", description="Headless mode"
-    )
+    package_name = "linorobot2_gazebo"
+    pkg_install_path = get_package_share_directory(package_name)
+    fitrobot_install_path = get_package_share_directory("fitrobot")
+    os.path.join(pkg_install_path, "bringup_launch.py")
+    default_worldname = "turtlebot3_world"
 
-    map_defaultpos = {
-        "tb3": [10, -8, 0.05],
-        "fit_office": [7, -17, 2],
-        "factory_bk": [30, -22, 0.05],
-    }
-    ekf_config_path = PathJoinSubstitution(
-        [FindPackageShare("linorobot2_base"), "config", "ekf.yaml"]
-    )
+    if "GAZEBO_RESOURCE_PATH" in os.environ:
+        resource_path = fitrobot_install_path + ":" + os.environ["GAZEBO_RESOURCE_PATH"]
+    else:
+        resource_path = fitrobot_install_path
 
-    description_launch_path = PathJoinSubstitution(
-        [FindPackageShare("linorobot2_description"), "launch", "description.launch.py"]
-    )
-
-    included_launch = IncludeLaunchDescription(
-        AnyLaunchDescriptionSource(
-            PathJoinSubstitution(
-                [FindPackageShare("my_rmf"), "launch", "my_sim.launch.xml"]
+    def worldname_get(context):
+        if "worldpath" in context.launch_configurations:
+            if "worldname" in context.launch_configurations:
+                raise RuntimeError("world and worldname cannot be set at the same time")
+        else:
+            worldname = context.launch_configurations.get(
+                "worldname", default_worldname
             )
-        ),
-        launch_arguments={
-            "map_name": LaunchConfiguration("map_name"),
-            "headless": LaunchConfiguration("headless"),
-        }.items(),
-    )
+            worldpath = os.path.join(
+                fitrobot_install_path,
+                "worlds",
+                f"{worldname}.{WORLD_INFO[worldname]['ext']}",
+            )
+            return [SetLaunchConfiguration("world", worldpath)]
 
-    spawn_robot_node_tb3 = Node(
-        package="gazebo_ros",
-        executable="spawn_entity.py",
-        name="urdf_spawner",
-        output="screen",
-        arguments=[
-            "-topic",
-            "robot_description",
-            "-entity",
-            "linorobot2",
-            "-x", str(map_defaultpos["tb3"][0]),
-            "-y", str(map_defaultpos["tb3"][1]),
-            "-z", str(map_defaultpos["tb3"][2]),
-        ],
-        condition=IfCondition(PythonExpression(["'", LaunchConfiguration('map_name'), "' == 'tb3'"]))
-    )
+    def worldpath_get(context):
+        if "worldpath" in context.launch_configurations:
+            if "worldname" in context.launch_configurations:
+                raise RuntimeError("world and worldname cannot be set at the same time")
+            worldpath = context.launch_configurations["worldpath"]
+            return [SetLaunchConfiguration("world", worldpath)]
 
-    spawn_robot_node_fit_office = Node(
-        package="gazebo_ros",
-        executable="spawn_entity.py",
-        name="urdf_spawner",
-        output="screen",
-        arguments=[
-            "-topic",
-            "robot_description",
-            "-entity",
-            "linorobot2",
-            "-x", str(map_defaultpos["fit_office"][0]),
-            "-y", str(map_defaultpos["fit_office"][1]),
-            "-z", str(map_defaultpos["fit_office"][2]),
-        ],
-        condition=IfCondition(PythonExpression(["'", LaunchConfiguration('map_name'), "' == 'fit_office'"]))
-    )
+    def x_position(context):
+        if "worldpath" in context.launch_configurations:
+            if "worldname" in context.launch_configurations:
+                raise RuntimeError("world and worldname cannot be set at the same time")
+            x = context.launch_configurations.get("x", "0.0")
+        else:
+            worldname = context.launch_configurations["worldname"]
+            x = context.launch_configurations.get("x", str(WORLD_INFO[worldname]["x"]))
+        return [SetLaunchConfiguration("x", x)]
 
-    spawn_robot_node_factory_bk = Node(
-        package="gazebo_ros",
-        executable="spawn_entity.py",
-        name="urdf_spawner",
-        output="screen",
-        arguments=[
-            "-topic",
-            "robot_description",
-            "-entity",
-            "linorobot2",
-            "-x", str(map_defaultpos["factory_bk"][0]),
-            "-y", str(map_defaultpos["factory_bk"][1]),
-            "-z", str(map_defaultpos["factory_bk"][2]),
-        ],
-        condition=IfCondition(PythonExpression(["'", LaunchConfiguration('map_name'), "' == 'factory_bk'"]))
-    )
+    def y_position(context):
+        if "worldpath" in context.launch_configurations:
+            if "worldname" in context.launch_configurations:
+                raise RuntimeError("world and worldname cannot be set at the same time")
+            y = context.launch_configurations.get("y", "0.0")
+        else:
+            worldname = context.launch_configurations["worldname"]
+            y = context.launch_configurations.get("y", str(WORLD_INFO[worldname]["y"]))
+        return [SetLaunchConfiguration("y", y)]
 
-    lino_timeout_node = Node(
-        package="linorobot2_gazebo",
-        executable="command_timeout.py",
-        name="command_timeout",
+    use_sim_time = True
+    description_launch_path = get_path(
+        "linorobot2_description", ["launch", "description.launch.py"]
     )
+    gazebo_launch_path = get_path("gazebo_ros", ["launch", "gazebo.launch.py"])
+    ekf_config_path = get_path("linorobot2_base", ["config", "ekf.yaml"])
 
-    ekf_node = Node(
-        package="robot_localization",
-        executable="ekf_node",
-        name="ekf_filter_node",
-        output="screen",
-        parameters=[{"use_sim_time": use_sim_time}, ekf_config_path],
-        remappings=[("odometry/filtered", "odom")],
-    )
+    worldname_arg = OpaqueFunction(function=worldname_get)
+    worldpath_arg = OpaqueFunction(function=worldpath_get)
+    x_arg = OpaqueFunction(function=x_position)
+    y_arg = OpaqueFunction(function=y_position)
 
-    lino_launch = IncludeLaunchDescription(
+    description = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(description_launch_path),
         launch_arguments={
             "use_sim_time": str(use_sim_time),
@@ -119,16 +110,53 @@ def generate_launch_description():
         }.items(),
     )
 
+    gazebo = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource(gazebo_launch_path),
+        launch_arguments={
+            "world": LaunchConfiguration("world"),
+        }.items(),
+    )
+    spawn_entity = Node(
+        package="gazebo_ros",
+        executable="spawn_entity.py",
+        arguments=[
+            "-topic",
+            "robot_description",
+            "-entity",
+            "zbot_lino",
+            "-x",
+            LaunchConfiguration("x"),
+            "-y",
+            LaunchConfiguration("y"),
+        ],
+        output="screen",
+    )
+    command_timeout = Node(
+        package="linorobot2_gazebo",
+        executable="command_timeout.py",
+        name="command_timeout",
+    )
+    robot_localization = Node(
+        package="robot_localization",
+        executable="ekf_node",
+        name="ekf_filter_node",
+        output="screen",
+        parameters=[{"use_sim_time": use_sim_time}, ekf_config_path],
+        remappings=[("odometry/filtered", "odom")],
+    )
     return LaunchDescription(
         [
-            map_name_arg,
-            headless_arg,
-            included_launch,
-            lino_launch,
-            spawn_robot_node_tb3,
-            spawn_robot_node_fit_office,
-            spawn_robot_node_factory_bk,
-            lino_timeout_node,
-            ekf_node,
+            SetEnvironmentVariable(name="GAZEBO_RESOURCE_PATH", value=resource_path),
+            SetEnvironmentVariable(name="LINOROBOT2_BASE", value="zbotlino2"),
+            # SetEnvironmentVariable(name="LINOROBOT2_BASE", value="zbotlino2a"),
+            x_arg,
+            y_arg,
+            worldname_arg,
+            worldpath_arg,
+            description,
+            gazebo,
+            spawn_entity,
+            command_timeout,
+            robot_localization,
         ]
     )
