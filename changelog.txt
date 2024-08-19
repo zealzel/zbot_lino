@@ -1,3 +1,6 @@
+2024/8/19 9:50
+fix: remove LINOROBOT2_BASE env variable hard-coding launch file
+
 2024/8/14 16:20
 fix: range topic remapping bug fixed
  - nav.launch.py: add repub node remappings to fix topic namespace bug

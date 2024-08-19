@@ -38,9 +38,9 @@ WORLD_INFO = {
 
 def generate_launch_description():
     package_name = "linorobot2_gazebo"
-    pkg_install_path = get_package_share_directory(package_name)
+    # pkg_install_path = get_package_share_directory(package_name)
     fitrobot_install_path = get_package_share_directory("fitrobot")
-    os.path.join(pkg_install_path, "bringup_launch.py")
+    # os.path.join(pkg_install_path, "bringup_launch.py")
     default_worldname = "turtlebot3_world"
 
     if "GAZEBO_RESOURCE_PATH" in os.environ:
@@ -147,7 +147,7 @@ def generate_launch_description():
     return LaunchDescription(
         [
             SetEnvironmentVariable(name="GAZEBO_RESOURCE_PATH", value=resource_path),
-            SetEnvironmentVariable(name="LINOROBOT2_BASE", value="zbotlino2"),
+            # SetEnvironmentVariable(name="LINOROBOT2_BASE", value="zbotlino2"),
             # SetEnvironmentVariable(name="LINOROBOT2_BASE", value="zbotlino2a"),
             x_arg,
             y_arg,
