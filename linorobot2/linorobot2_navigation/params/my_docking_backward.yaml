@@ -1,0 +1,70 @@
+docking_server:
+  ros__parameters:
+    use_sim_time: true
+    controller_frequency: 50.0
+    initial_perception_timeout: 5.0
+    wait_charge_timeout: 5.0
+    dock_approach_timeout: 30.0
+    undock_linear_tolerance: 0.05
+    undock_angular_tolerance: 0.1
+    # max_retries: 5
+    max_retries: 1
+    base_frame: "base_link"
+    fixed_frame: "odom"
+    dock_prestaging_tolerance: 0.1
+    dock_backwards: true
+
+    # Types of docks
+    dock_plugins: ["my_dock", "my_dock_yaw1", "my_dock_yaw2", "my_dock_yaw3"]
+    my_dock:
+      plugin: "opennav_docking::SimpleChargingDock"
+      filter_coef: 0.1
+      docking_threshold: 0.01
+      # docking_threshold: 0.03
+      use_external_detection_pose: true
+      use_battery_status: false # true
+      external_detection_timeout: 1.0
+      staging_x_offset: 0.0
+      staging_yaw_offset: 0.0
+      external_detection_translation_y: 0.0
+      external_detection_rotation_roll: 0.0
+      external_detection_rotation_pitch: 0.0
+      external_detection_translation_x: 0.50
+      external_detection_rotation_yaw: 0.0
+
+    my_dock_yaw1:
+      plugin: "opennav_docking::SimpleChargingDock"
+      staging_yaw_offset: 3.14159
+
+    my_dock_yaw2:
+      plugin: "opennav_docking::SimpleChargingDock"
+      staging_yaw_offset: -1.571
+
+    my_dock_yaw3:
+      plugin: "opennav_docking::SimpleChargingDock"
+      staging_yaw_offset: 0.785
+
+    # Dock instances
+    docks: ["home_dock_1", "home_dock_2", "home_dock_3"]
+    home_dock_1:
+      type: "my_dock_yaw1"
+      frame: map
+      pose: [1.0, -0.3, 0.0]
+
+    home_dock_2:
+      type: "my_dock_yaw2"
+      frame: map
+      pose: [-0.3, 2.0, 0.0]
+
+    home_dock_3:
+      type: "my_dock_yaw3"
+      frame: map
+      pose: [-1, -2.5, 0.0]
+
+    controller:
+      k_phi: 3.0
+      k_delta: 2.0
+      v_linear_min: 0.15
+      v_linear_max: 0.15
+      slowdown_radius: 0.1
+      v_angular_max: 0.3

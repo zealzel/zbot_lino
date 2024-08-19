@@ -1,3 +1,16 @@
+2024/8/19 17:00
+feat: Add auto-docking feature
+ - change under linorobot2_naviation package
+ - usage
+   ros2 launch linorobot2_navigation navdock.launch.py sim:=true rviz:=true
+   this launch file is targeted to be used with all cases. Currently only single/simu case tested.
+ - rely on apriltag_ros
+ - Add several files
+   - launch/autodock: detect.launch.py, dock.launch.py, navdock.launch.py
+   - src: detect_pose.cpp
+   - params: my_docking_backward.yaml
+   - rviz: multi_nav2_range_dock.rviz
+
 2024/8/19 9:50
 fix: remove LINOROBOT2_BASE env variable hard-coding launch file
 
