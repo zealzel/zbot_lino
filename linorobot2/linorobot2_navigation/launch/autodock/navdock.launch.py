@@ -6,7 +6,6 @@ from launch.actions import (
 from launch.substitutions import LaunchConfiguration, PathJoinSubstitution
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch_ros.substitutions import FindPackageShare
-from launch.conditions import IfCondition, UnlessCondition
 
 
 def get_path(package_name, subpaths=None):
@@ -26,6 +25,11 @@ def generate_launch_description():
     use_rviz_arg = DeclareLaunchArgument(
         name="rviz", default_value="true", description="Run rviz"
     )
+    namespace_arg = DeclareLaunchArgument(
+        name="namespace",
+        default_value="",
+        description="namespace",
+    )
     # rviz_config_path = get_path(package_name, ["rviz", "nav2_camera.rviz"])
     rviz_config_path = get_path(package_name, ["rviz", "multi_nav2_range_dock.rviz"])
     lino_navigation = IncludeLaunchDescription(
@@ -33,6 +37,7 @@ def generate_launch_description():
             get_path("linorobot2_navigation", ["launch", "nav.launch.py"])
         ),
         launch_arguments={
+            "namespace": LaunchConfiguration("namespace"),
             "sim": LaunchConfiguration("sim"),
             "rviz": LaunchConfiguration("rviz"),
             "rviz_config": rviz_config_path,
@@ -44,12 +49,14 @@ def generate_launch_description():
         ),
         launch_arguments={
             "use_sim_time": LaunchConfiguration("use_sim_time"),
+            "namespace": LaunchConfiguration("namespace"),
         }.items(),
     )
     return LaunchDescription(
         [
             use_sim_arg,
             use_rviz_arg,
+            namespace_arg,
             lino_navigation,
             dock_robot,
         ]

@@ -32,7 +32,6 @@ from nav2_common.launch import RewrittenYaml
 
 
 def generate_launch_description():
-    print("JJJJJJJJJJJJJJJJJJ")
     package_name = "linorobot2_navigation"
     bringup_dir = get_package_share_directory(package_name)
     launch_dir = os.path.join(bringup_dir, "launch", "nav2_bringup")

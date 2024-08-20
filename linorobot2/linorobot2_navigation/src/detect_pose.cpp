@@ -21,7 +21,7 @@ class DockPosePublisher : public rclcpp::Node {
     void detection_callback(const apriltag_msgs::msg::AprilTagDetectionArray::SharedPtr msg) {
         auto pose = std::make_shared<geometry_msgs::msg::PoseStamped>();
 
-        RCLCPP_INFO(this->get_logger(), "detection_callback!");
+        // RCLCPP_INFO(this->get_logger(), "detection_callback!");
 
         for (const auto& detection : msg->detections) {
             if (!use_first_detection_) {
@@ -29,8 +29,8 @@ class DockPosePublisher : public rclcpp::Node {
                     dock_tag_ids_.end()) {
                     pose->header = msg->header;
                     pose->pose = detection.pose.pose.pose;
-                    RCLCPP_INFO(this->get_logger(), "(%f,%f,%f)\n", pose->pose.position.x,
-                                pose->pose.position.y, pose->pose.position.z);
+                    // RCLCPP_INFO(this->get_logger(), "(%f,%f,%f)\n", pose->pose.position.x,
+                    //             pose->pose.position.y, pose->pose.position.z);
                     publisher_->publish(*pose);
                     return;
                 }

@@ -49,6 +49,11 @@ def generate_launch_description():
     use_rviz_arg = DeclareLaunchArgument(
         name="rviz", default_value="false", description="Run rviz"
     )
+    use_composition_arg = DeclareLaunchArgument(
+        name="use_composition",
+        default_value="True",
+        description="Enable use composition",
+    )
     rviz_config_arg = DeclareLaunchArgument(
         "rviz_config",
         default_value=get_path(package_name, ["rviz", "multi_nav2_range.rviz"]),
@@ -75,6 +80,7 @@ def generate_launch_description():
             "use_namespace": "True",
             "use_sim_time": LaunchConfiguration("sim"),
             "params_file": LaunchConfiguration("params_file"),
+            "use_composition": LaunchConfiguration("use_composition"),
         }.items(),
     )
     rviz = IncludeLaunchDescription(
@@ -111,6 +117,7 @@ def generate_launch_description():
             namespace_arg,
             use_sim_arg,
             use_rviz_arg,
+            use_composition_arg,
             rviz_config_arg,
             params_arg,
             nav2_bringup,

@@ -1,5 +1,6 @@
 import os
 import yaml
+from launch.substitutions import LaunchConfiguration
 from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument, IncludeLaunchDescription
@@ -49,32 +50,48 @@ def generate_launch_description():
         "staging_yaw_offset"
     ] = my_dock_yaw3_staging_yaw_offset
 
+    namespace_arg = DeclareLaunchArgument(
+        name="namespace",
+        default_value="",
+        description="namespace",
+    )
+
     dock_detection_launch = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
             os.path.join(
                 detect_pose_launch_dir,
                 "detect.launch.py",
             )
-        )
+        ),
+        launch_arguments={
+            "namespace": LaunchConfiguration("namespace"),
+        }.items(),
     )
     docking_server = Node(
         package="opennav_docking",
         executable="opennav_docking",
         name="docking_server",
+        namespace=LaunchConfiguration("namespace"),
         output="screen",
         # parameters=[params_file],
         # parameters=[params],
         parameters=[params["docking_server"]["ros__parameters"]],
+        remappings=[
+            ("/tf", "tf"),
+            ("/tf_static", "tf_static"),
+        ],
     )
     lifecycle_manager = Node(
         package="nav2_lifecycle_manager",
         executable="lifecycle_manager",
         name="lifecycle_manager_docking",
+        namespace=LaunchConfiguration("namespace"),
         output="screen",
         parameters=[{"autostart": True}, {"node_names": ["docking_server"]}],
     )
     return LaunchDescription(
         [
+            namespace_arg,
             dock_detection_launch,
             docking_server,
             lifecycle_manager,

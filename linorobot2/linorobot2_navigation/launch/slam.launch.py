@@ -1,3 +1,4 @@
+import os
 from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument, IncludeLaunchDescription
 from launch.substitutions import LaunchConfiguration, PathJoinSubstitution
@@ -21,7 +22,7 @@ def include_launch_description(launch_path, **kwargs):
 
 
 def generate_launch_description():
-    robot_base = os.getenv('LINOROBOT2_BASE', 'zbotlino2')
+    robot_base = os.getenv("LINOROBOT2_BASE", "zbotlino2")
     package_name = "linorobot2_navigation"
     slam_launch_path = get_path("slam_toolbox", ["launch", "online_async_launch.py"])
 
@@ -42,23 +43,23 @@ def generate_launch_description():
         condition=IfCondition(LaunchConfiguration("rviz")),
         parameters=[{"use_sim_time": LaunchConfiguration("sim")}],
     )
-    return LaunchDescription([
-        DeclareLaunchArgument(
-            name='sim',
-            default_value='false',
-            description='Enable use_sime_time to true'
-        ),
-        DeclareLaunchArgument(
-            name='rviz',
-            default_value='false',
-            description='Run rviz'
-        ),
-        IncludeLaunchDescription(
-            PythonLaunchDescriptionSource(slam_launch_path),
-            launch_arguments={
-                'use_sim_time': LaunchConfiguration("sim"),
-                "slam_params_file": slam_config_path
-            }.items()
-        ),
-        rviz,
-    ])
+    return LaunchDescription(
+        [
+            DeclareLaunchArgument(
+                name="sim",
+                default_value="false",
+                description="Enable use_sime_time to true",
+            ),
+            DeclareLaunchArgument(
+                name="rviz", default_value="false", description="Run rviz"
+            ),
+            IncludeLaunchDescription(
+                PythonLaunchDescriptionSource(slam_launch_path),
+                launch_arguments={
+                    "use_sim_time": LaunchConfiguration("sim"),
+                    "slam_params_file": slam_config_path,
+                }.items(),
+            ),
+            rviz,
+        ]
+    )

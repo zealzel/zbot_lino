@@ -1,7 +1,12 @@
 import os
 from launch_ros.actions import Node
-from launch import LaunchDescription
+from launch.actions import (
+    DeclareLaunchArgument,
+)
+from launch.conditions import IfCondition, UnlessCondition
 from launch_ros.actions import ComposableNodeContainer
+from launch.substitutions import LaunchConfiguration
+from launch import LaunchDescription
 from launch_ros.descriptions import ComposableNode
 from ament_index_python.packages import get_package_share_directory
 
@@ -12,11 +17,17 @@ config = os.path.join(
 
 def generate_launch_description():
     package_name = "linorobot2_navigation"
+    namespace_arg = DeclareLaunchArgument(
+        name="namespace",
+        default_value="",
+        description="namespace",
+    )
     composable_nodes = [
         ComposableNode(
             package="image_proc",
             plugin="image_proc::RectifyNode",
             name="rectify_node",
+            namespace=LaunchConfiguration("namespace"),
             remappings=[
                 ("image", "camera/color/image_raw"),
                 ("camera_info", "camera/color/camera_info"),
@@ -33,17 +44,19 @@ def generate_launch_description():
             package="apriltag_ros",
             plugin="AprilTagNode",
             name="apriltag",
+            namespace=LaunchConfiguration("namespace"),
             parameters=[config],
             remappings=[
-                ("/image", "camera/color/image_raw"),
+                ("image", "camera/color/image_raw"),
                 # ("/image", "camera/color/image_rect"),
-                ("/camera_info", "camera/color/camera_info"),
+                ("camera_info", "camera/color/camera_info"),
             ],
         ),
     ]
     container = ComposableNodeContainer(
         name="image_proc_container",
-        namespace="",
+        # namespace="",
+        namespace=LaunchConfiguration("namespace"),
         package="rclcpp_components",
         executable="component_container",
         composable_node_descriptions=composable_nodes,
@@ -51,12 +64,14 @@ def generate_launch_description():
     dock_pose_publisher = Node(
         package=package_name,
         executable="detect_pose",
+        namespace=LaunchConfiguration("namespace"),
         name="detect_pose_node",
         parameters=[{"dock_tag_ids": [10, 20, 30]}],
         # parameters=[{"dock_tag_ids": [30]}],
     )
     return LaunchDescription(
         [
+            namespace_arg,
             container,
             dock_pose_publisher,
         ]

@@ -1,3 +1,14 @@
+2024/8/20 17:20
+feat: Add auto-docking simu/multi support
+ - Need several new packages, such as opennav_docking, apriltag_ros
+ - Add new launch file navdock.launch.py
+ - See fitrobot's summary.md for more details
+ - important changes
+   - change camera.urdf.xacro for namespace support
+   - modify complimentary launch files detect.launch.py & dock.launch.py for namespace support
+   - set nav.launch.py to use composition by default
+
+
 2024/8/19 17:00
 feat: Add auto-docking feature
  - change under linorobot2_naviation package
