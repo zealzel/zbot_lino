@@ -22,6 +22,16 @@ def generate_launch_description():
         default_value="",
         description="namespace",
     )
+    # image_remap_input_arg = DeclareLaunchArgument(
+    #     name="image_remap",
+    #     default_value="camera/color/image_raw",
+    #     description="image input topic",
+    # )
+    # camera_info_remap_input_arg = DeclareLaunchArgument(
+    #     name="camera_info_remap",
+    #     default_value="camera/color/camera_info",
+    #     description="camera info input topic",
+    # )
     composable_nodes = [
         ComposableNode(
             package="image_proc",
@@ -47,9 +57,11 @@ def generate_launch_description():
             namespace=LaunchConfiguration("namespace"),
             parameters=[config],
             remappings=[
-                ("image", "camera/color/image_raw"),
+                ("image", LaunchConfiguration("image_remap")),
+                ("camera_info", LaunchConfiguration("camera_info_remap")),
+                # ("image", "camera/color/image_raw"),
+                # ("camera_info", "camera/color/camera_info"),
                 # ("/image", "camera/color/image_rect"),
-                ("camera_info", "camera/color/camera_info"),
             ],
         ),
     ]

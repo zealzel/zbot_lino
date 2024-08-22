@@ -1,3 +1,12 @@
+2024/8/22 11:50
+feat: Add additional launch arguments for detect & navdock in order to support sim/real cases
+ - sim case
+    - image ->  camera/color/image_raw
+    - camera_info -> camera/color/camera_info
+ - real case
+    - image -> image_raw
+    - camera_info -> camera_info
+
 2024/8/20 17:20
 feat: Add auto-docking simu/multi support
  - Need several new packages, such as opennav_docking, apriltag_ros
