@@ -24,6 +24,7 @@ from launch_ros.actions import LoadComposableNodes
 from launch_ros.actions import Node
 from launch_ros.descriptions import ComposableNode
 from nav2_common.launch import RewrittenYaml
+from launch.substitutions import AndSubstitution, NotSubstitution
 
 
 def generate_launch_description():
@@ -175,17 +176,45 @@ def generate_launch_description():
     )
 
     load_composable_nodes = LoadComposableNodes(
-        condition=IfCondition(use_composition),
+        condition=IfCondition(AndSubstitution(use_composition, map_server)),
         target_container=container_name_full,
         composable_node_descriptions=[
             ComposableNode(
-                ##condition=IfCondition(map_server), #TODO
+                condition=IfCondition(map_server),
                 package="nav2_map_server",
                 plugin="nav2_map_server::MapServer",
                 name="map_server",
                 parameters=[configured_params],
                 remappings=remappings,
             ),
+            ComposableNode(
+                package="nav2_amcl",
+                plugin="nav2_amcl::AmclNode",
+                name="amcl",
+                parameters=[configured_params],
+                remappings=remappings,
+            ),
+            ComposableNode(
+                package="nav2_lifecycle_manager",
+                plugin="nav2_lifecycle_manager::LifecycleManager",
+                name="lifecycle_manager_localization",
+                parameters=[
+                    {
+                        "use_sim_time": use_sim_time,
+                        "autostart": autostart,
+                        "node_names": ["amcl"],
+                    }
+                ],
+            ),
+        ],
+    )
+
+    load_composable_nodes_no_mapserver = LoadComposableNodes(
+        condition=IfCondition(
+            AndSubstitution(use_composition, NotSubstitution(map_server))
+        ),
+        target_container=container_name_full,
+        composable_node_descriptions=[
             ComposableNode(
                 package="nav2_amcl",
                 plugin="nav2_amcl::AmclNode",
@@ -229,5 +258,6 @@ def generate_launch_description():
     # Add the actions to launch all of the localiztion nodes
     ld.add_action(load_nodes)
     ld.add_action(load_composable_nodes)
+    ld.add_action(load_composable_nodes_no_mapserver)
 
     return ld
