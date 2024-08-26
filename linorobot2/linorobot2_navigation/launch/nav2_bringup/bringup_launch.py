@@ -29,10 +29,12 @@ from launch.substitutions import LaunchConfiguration, PythonExpression
 from launch_ros.actions import Node
 from launch_ros.actions import PushRosNamespace
 from nav2_common.launch import RewrittenYaml
+from launch.actions import LogInfo
 
 
 def generate_launch_description():
     package_name = "linorobot2_navigation"
+    robot = "lino2"
     bringup_dir = get_package_share_directory(package_name)
     launch_dir = os.path.join(bringup_dir, "launch", "nav2_bringup")
 
@@ -179,6 +181,7 @@ def generate_launch_description():
                 ),
                 launch_arguments={
                     "namespace": namespace,
+                    "mapkey": (LaunchConfiguration("worldname"), "/", robot),
                     "use_sim_time": use_sim_time,
                     "autostart": autostart,
                     "params_file": params_file,
@@ -207,6 +210,7 @@ def generate_launch_description():
     ld.add_action(declare_use_composition_cmd)
     ld.add_action(declare_use_respawn_cmd)
     ld.add_action(declare_log_level_cmd)
+    ld.add_action(LogInfo(msg=["mapkey: ", LaunchConfiguration("mapkey")]))
 
     # Add the actions to launch all of the navigation nodes
     ld.add_action(bringup_cmd_group)

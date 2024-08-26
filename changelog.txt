@@ -1,3 +1,12 @@
+2024/8/25 10:10
+refactor: integration for humble-multi
+ - archive no-used launch files and only keep the relevant
+    - one nav.luanch.py & snippets
+ - run costmap_filter_info.launch.py in here instead of in fitrobot
+   in order to let keepout work under different worldname|robot cases
+   all maps & masks is under mapkey namespace (ex: /turtlebot3_world/lino2)
+
+
 2024/8/22 11:50
 feat: Add additional launch arguments for detect & navdock in order to support sim/real cases
  - sim case

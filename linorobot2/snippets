@@ -1,40 +1,18 @@
-# ===================================================
-# real robot navigation
-# ===================================================
 
-# === robot bringup (on robot) ===
-ros2 launch linorobot2_bringup bringup.launch.py
+# single 
+(assume the robot type is lino2 and roobt namespace is empty)
+ros2 launch fitrobot map.launch.py sim:=true \
+  worldname:=turtlebot3_world|turtlebot3_house|room_with_tags|obstacles \
+  robot:=lino2 use_mask:=true|false
+ros2 launch fitrobot map.launch.py sim:=true worldname:=turtlebot3_world
+ros2 launch linorobot2_gazebo sim.launch.py worldname:=turtlebot3_world
+ros2 launch linorobot2_navigation nav.launch.py sim:=true rviz:=true worldname:=turtlebot3_world
 
-# === teleop (on robot or pc) ===
-ros2 run teleop_twist_keyboard teleop_twist_keyboard
-
-<<<----------------------------------------------------------------------->>>
-
-# === slam mapping (on robot) ===
-ros2 launch linorobot2_navigation slam.launch.py
-
-
-# === save the map ===
-ros2 run nav2_map_server map_saver_cli -f mymap # pgm/yaml
-ros2 service call /slam_toolbox/serialize_map slam_toolbox/srv/SerializePoseGraph "filename: '$HOME/maps/mymap'" # serialized map for continuous mapping
-
-
-# === navigation (on robot) ===
-ros2 launch linorobot2_navigation navigation.launch.py
-# verbose (default)
-ros2 launch linorobot2_navigation navigation.launch.py sim:=false rviz:=false \
-    map:=$(ros2 pkg prefix fitrobot)/share/fitrobot/maps/office_res002_0914.yaml
-    params_file:=$(ros2 pkg prefix linorobot2_navigation)/share/linorobot2_navigation/config/zbotlino/navigation.yaml
-
-
-# === defined-route navigation ===
-ros2 launch linorobot2_navigation navigation_keepout.launch.py
-# verbose (default)
-ros2 launch linorobot2_navigation navigation_keepout.launch.py sim:=false rviz:=false \
-    map:=$(ros2 pkg prefix fitrobot)/share/fitrobot/maps/office_res002_0523.yaml \
-    mask:=$(ros2 pkg prefix fitrobot)/share/fitrobot/masks/keepout_mask_office_res002_0523.yaml \
-    params_file:=$(ros2 pkg prefix linorobot2_navigation)/share/linorobot2_navigation/config/zbotlino/navigation_keepout.yaml
-
-
-# === rviz (on pc) ===
-ros2 launch nav2_bringup rviz_launch.py
+# multi
+(assume the robot type is lino2 and roobt namespace is /robot1 or /robot2)
+ros2 launch fitrobot map.launch.py sim:=true \
+  worldname:=turtlebot3_world|turtlebot3_house|room_with_tags|obstacles \
+  robot:=lino2 use_mask:=false|true
+ros2 launch fitrobot map.launch.py sim:=true worldname:=turtlebot3_world robot:=lino2
+ros2 launch linorobot2_gazebo sim_multi.launch.py worldname:=turtlebot3_world
+ros2 launch linorobot2_navigation nav.launch.py sim:=true rviz:=true worldname:=turtlebot3_world namespace:=/robot1

@@ -60,15 +60,6 @@ def generate_launch_description():
     # https://github.com/ros/geometry2/issues/32
     # https://github.com/ros/robot_state_publisher/pull/30
     # TODO(orduno) Substitute with `PushNodeRemapping`
-    #              https://github.com/ros2/launch_ros/issues/56
-    remappings = [
-        ("/tf", "tf"),
-        ("/tf_static", "tf_static"),
-        # ('/scan', [namespace, '/scan'])],
-        ("/scan1", [namespace, "/scan1"]),
-        ("/scan2", [namespace, "/scan2"]),
-        ("/odom", "odom"),
-    ]
 
     # Create our own temporary YAML files that include substitutions
     param_substitutions = {"use_sim_time": use_sim_time, "autostart": autostart}
@@ -86,6 +77,10 @@ def generate_launch_description():
 
     declare_namespace_cmd = DeclareLaunchArgument(
         "namespace", default_value="", description="Top-level namespace"
+    )
+
+    declare_mapkey_cmd = DeclareLaunchArgument(
+        "mapkey", default_value="", description="mapkey"
     )
 
     declare_use_sim_time_cmd = DeclareLaunchArgument(
@@ -127,6 +122,15 @@ def generate_launch_description():
     declare_log_level_cmd = DeclareLaunchArgument(
         "log_level", default_value="info", description="log level"
     )
+
+    remappings = [
+        ("/tf", "tf"),
+        ("/tf_static", "tf_static"),
+        # ("/scan1", [namespace, "/scan1"]),
+        # ("/scan2", [namespace, "/scan2"]),
+        ("/odom", "odom"),
+        # ("/costmap_filter_info", [namespace, "/costmap_filter_info"]),
+    ]
 
     load_nodes = GroupAction(
         condition=IfCondition(PythonExpression(["not ", use_composition])),

@@ -11,6 +11,9 @@ from launch.conditions import IfCondition, UnlessCondition
 from launch_ros.substitutions import FindPackageShare
 from launch_ros.actions import Node
 
+from nav2_common.launch import RewrittenYaml, ReplaceString
+from launch.actions import LogInfo
+
 
 def get_path(package_name, subpaths):
     return PathJoinSubstitution([FindPackageShare(package_name)] + subpaths)
@@ -18,6 +21,7 @@ def get_path(package_name, subpaths):
 
 def generate_launch_description():
     package_name = "linorobot2_navigation"
+    robot = "lino2"
     fitrobot_install_path = get_package_share_directory("fitrobot")
 
     # simulation only: 2wd|4wd|macanum|zbotlinolong
@@ -31,16 +35,16 @@ def generate_launch_description():
     if robot_base in ["zbotlino", "zbotlinosick1"]:
         robot_base = "zbotlino"
 
-    params_file_path = get_path(
-        # package_name, ["config", robot_base, "navigation.multiworked.yaml"]
-        package_name,
-        ["config", robot_base, "navigation_keepout.yaml"],
-    )
+    params_file_path = get_path(package_name, ["config", robot_base, "navigation.yaml"])
     namespace_arg = DeclareLaunchArgument(
         name="namespace",
         default_value="",
         description="namespace",
     )
+
+    # mapkey_arg = DeclareLaunchArgument(name="mapkey", description="mapkey")
+    worldname_arg = DeclareLaunchArgument(name="worldname", description="worldname")
+
     use_sim_arg = DeclareLaunchArgument(
         name="sim",
         default_value="false",
@@ -66,6 +70,50 @@ def generate_launch_description():
             "Full path to the ROS2 parameters file to use for all launched nodes"
         ),
     )
+    params_file = LaunchConfiguration("params_file")
+    params_file = ReplaceString(
+        source_file=params_file,
+        replacements={
+            "<map_topic>": ("/", LaunchConfiguration("worldname"), "/", robot, "/map"),
+            "<scan1>": (LaunchConfiguration("namespace"), "/scan1"),
+            "<scan2>": (LaunchConfiguration("namespace"), "/scan2"),
+            "<costmap_filter_info>": (LaunchConfiguration("namespace"), "/costmap_filter_info"),
+            # "<costmap_filter_info>": ("/", LaunchConfiguration("worldname"), "/", robot, "/costmap_filter_info"),
+        },
+    )
+    rviz_config_file = LaunchConfiguration("rviz_config")
+    rviz_config_file = ReplaceString(
+        source_file=rviz_config_file,
+        replacements={
+            "<map_topic>": ("/", LaunchConfiguration("worldname"), "/", robot, "/map"),
+            "<map_updates_topic>": ("/", LaunchConfiguration("worldname"), "/", robot, "/map_updates"),
+        },
+    )
+
+    costmap_filter_info_launch_path = get_path(
+        package_name, ["launch", "costmap_filter_info.launch.py"]
+    )
+    keepout_params_arg = DeclareLaunchArgument(
+        "keepout_params_file",
+        default_value=get_path(package_name, ["params", "keepout_params.yaml"]),
+        description="params file for keepout layer",
+    )
+    keepout_params_file = LaunchConfiguration("keepout_params_file")
+    keepout_params_file = ReplaceString(
+        source_file=keepout_params_file,
+        replacements={
+            # "<keepout_filter_mask>": ("/", LaunchConfiguration("worldname"), "/", robot, "/keepout_filter_mask")
+            "keepout_filter_mask": ("/", LaunchConfiguration("worldname"), "/", robot, "/keepout_filter_mask")
+        },
+    )
+    costmap_filter_info = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource(costmap_filter_info_launch_path),
+        launch_arguments={
+            "namespace": LaunchConfiguration("namespace"),
+            "worldname": LaunchConfiguration("worldname"),
+            "keepout_params_file": keepout_params_file,
+        }.items(),
+    )
     nav_launch_dir = os.path.join(
         get_package_share_directory(package_name), "launch", "nav2_bringup"
     )
@@ -79,17 +127,22 @@ def generate_launch_description():
             "namespace": LaunchConfiguration("namespace"),
             "use_namespace": "True",
             "use_sim_time": LaunchConfiguration("sim"),
-            "params_file": LaunchConfiguration("params_file"),
+            "params_file": params_file,
+            "mapkey": (LaunchConfiguration("worldname"), "/", robot),
             "use_composition": LaunchConfiguration("use_composition"),
         }.items(),
     )
+    print("mapkey: ", f"/{robot}")
+
     rviz = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(os.path.join(nav_launch_dir, "rviz_launch.py")),
         launch_arguments={
             "use_sim_time": LaunchConfiguration("sim"),
             "namespace": LaunchConfiguration("namespace"),
+            # "namespace": ("/", LaunchConfiguration("worldname"), "/", robot),
             "use_namespace": "True",
-            "rviz_config": LaunchConfiguration("rviz_config"),
+            "rviz_config": rviz_config_file,
+            # "rviz_config": LaunchConfiguration("rviz_config"),
             "log_level": "warn",
         }.items(),
         condition=IfCondition(LaunchConfiguration("rviz")),
@@ -115,13 +168,18 @@ def generate_launch_description():
     return LaunchDescription(
         [
             namespace_arg,
+            worldname_arg,
             use_sim_arg,
             use_rviz_arg,
             use_composition_arg,
             rviz_config_arg,
             params_arg,
+            keepout_params_arg,
+            costmap_filter_info,
             nav2_bringup,
             rviz,
             uros_repub,
+            LogInfo(msg=["params_file: ", params_file]),
+            LogInfo(msg=["keepout_params_file: ", keepout_params_file])
         ]
     )

@@ -1,0 +1,40 @@
+# ===================================================
+# real robot navigation
+# ===================================================
+
+# === robot bringup (on robot) ===
+ros2 launch linorobot2_bringup bringup.launch.py
+
+# === teleop (on robot or pc) ===
+ros2 run teleop_twist_keyboard teleop_twist_keyboard
+
+<<<----------------------------------------------------------------------->>>
+
+# === slam mapping (on robot) ===
+ros2 launch linorobot2_navigation slam.launch.py
+
+
+# === save the map ===
+ros2 run nav2_map_server map_saver_cli -f mymap # pgm/yaml
+ros2 service call /slam_toolbox/serialize_map slam_toolbox/srv/SerializePoseGraph "filename: '$HOME/maps/mymap'" # serialized map for continuous mapping
+
+
+# === navigation (on robot) ===
+ros2 launch linorobot2_navigation navigation.launch.py
+# verbose (default)
+ros2 launch linorobot2_navigation navigation.launch.py sim:=false rviz:=false \
+    map:=$(ros2 pkg prefix fitrobot)/share/fitrobot/maps/office_res002_0914.yaml
+    params_file:=$(ros2 pkg prefix linorobot2_navigation)/share/linorobot2_navigation/config/zbotlino/navigation.yaml
+
+
+# === defined-route navigation ===
+ros2 launch linorobot2_navigation navigation_keepout.launch.py
+# verbose (default)
+ros2 launch linorobot2_navigation navigation_keepout.launch.py sim:=false rviz:=false \
+    map:=$(ros2 pkg prefix fitrobot)/share/fitrobot/maps/office_res002_0523.yaml \
+    mask:=$(ros2 pkg prefix fitrobot)/share/fitrobot/masks/keepout_mask_office_res002_0523.yaml \
+    params_file:=$(ros2 pkg prefix linorobot2_navigation)/share/linorobot2_navigation/config/zbotlino/navigation_keepout.yaml
+
+
+# === rviz (on pc) ===
+ros2 launch nav2_bringup rviz_launch.py
