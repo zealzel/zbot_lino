@@ -126,10 +126,8 @@ def generate_launch_description():
     remappings = [
         ("/tf", "tf"),
         ("/tf_static", "tf_static"),
-        # ("/scan1", [namespace, "/scan1"]),
-        # ("/scan2", [namespace, "/scan2"]),
         ("/odom", "odom"),
-        # ("/costmap_filter_info", [namespace, "/costmap_filter_info"]),
+        ("/trajectories", "trajectories"),
     ]
 
     load_nodes = GroupAction(
@@ -143,14 +141,7 @@ def generate_launch_description():
                 respawn_delay=2.0,
                 parameters=[configured_params],
                 arguments=["--ros-args", "--log-level", log_level],
-                remappings=remappings
-                + [
-                    ("cmd_vel", "cmd_vel_nav"),
-                    ("/range1_sensor", "range1_sensor"),
-                    ("/range2_sensor", "range2_sensor"),
-                    ("/range3_sensor", "range3_sensor"),
-                    ("/range4_sensor", "range4_sensor"),
-                ],
+                remappings=remappings + [("cmd_vel", "cmd_vel_nav")],
             ),
             Node(
                 package="nav2_smoother",

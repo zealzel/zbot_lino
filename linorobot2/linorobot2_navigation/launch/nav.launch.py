@@ -138,6 +138,7 @@ def generate_launch_description():
         PythonLaunchDescriptionSource(os.path.join(nav_launch_dir, "rviz_launch.py")),
         launch_arguments={
             "use_sim_time": LaunchConfiguration("sim"),
+            "worldname": LaunchConfiguration("worldname"),
             "namespace": LaunchConfiguration("namespace"),
             # "namespace": ("/", LaunchConfiguration("worldname"), "/", robot),
             "use_namespace": "True",

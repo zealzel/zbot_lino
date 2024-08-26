@@ -28,13 +28,13 @@ from nav2_common.launch import ReplaceString
 
 
 def generate_launch_description():
+    robot = "lino2"
     # Get the launch directory
     bringup_dir = get_package_share_directory("nav2_bringup")
 
     # Create the launch configuration variables
     namespace = LaunchConfiguration("namespace")
     use_namespace = LaunchConfiguration("use_namespace")
-    rviz_config_file = LaunchConfiguration("rviz_config")
 
     # Declare the launch arguments
     declare_namespace_cmd = DeclareLaunchArgument(
@@ -45,6 +45,7 @@ def generate_launch_description():
             "<robot_namespace> keyword on the rviz config file."
         ),
     )
+    worldname_arg = DeclareLaunchArgument(name="worldname", description="worldname")
 
     declare_use_namespace_cmd = DeclareLaunchArgument(
         "use_namespace",
@@ -61,7 +62,7 @@ def generate_launch_description():
         description="Full path to the RVIZ config file to use",
     )
 
-    # Launch rviz
+    rviz_config_file = LaunchConfiguration("rviz_config")
     start_rviz_cmd = Node(
         condition=UnlessCondition(use_namespace),
         package="rviz2",
@@ -72,9 +73,12 @@ def generate_launch_description():
 
     namespaced_rviz_config_file = ReplaceString(
         source_file=rviz_config_file,
-        replacements={"<robot_namespace>": ("/", namespace)},
+        replacements={
+            "<robot_namespace>": ("/", namespace),
+            "<map_topic>": ("/", LaunchConfiguration("worldname"), "/", robot, "/map"),
+            "<map_updates_topic>": ("/", LaunchConfiguration("worldname"), "/", robot, "/map_updates"),
+        },
     )
-
     start_namespaced_rviz_cmd = Node(
         condition=IfCondition(use_namespace),
         package="rviz2",
@@ -111,6 +115,7 @@ def generate_launch_description():
     ld = LaunchDescription()
 
     # Declare the launch options
+    ld.add_action(worldname_arg)
     ld.add_action(declare_namespace_cmd)
     ld.add_action(declare_use_namespace_cmd)
     ld.add_action(declare_rviz_config_file_cmd)

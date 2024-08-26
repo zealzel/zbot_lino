@@ -266,12 +266,7 @@ local_costmap:
         plugin: "nav2_costmap_2d::RangeSensorLayer"
         # topics: ["/range1_sensor", "/range2_sensor"]
         topics:
-          [
-            "/range1_sensor",
-            "/range2_sensor",
-            "/range3_sensor",
-            "/range4_sensor",
-          ]
+          ["range1_sensor", "range2_sensor", "range3_sensor", "range4_sensor"]
         inflate_cone: 1.0
         clear_threshold: 0.2
         mark_threshold: 0.8
