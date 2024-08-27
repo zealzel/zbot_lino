@@ -63,21 +63,21 @@ def generate_launch_description():
     )
 
     rviz_config_file = LaunchConfiguration("rviz_config")
+    namespaced_rviz_config_file = ReplaceString(
+        source_file=rviz_config_file,
+        replacements={
+            # "<robot_namespace>": ("/", namespace),
+            "<map_topic>": ("/", LaunchConfiguration("worldname"), "/", robot, "/map"),
+            "<map_updates_topic>": ("/", LaunchConfiguration("worldname"), "/", robot, "/map_updates"),
+        },
+    )
     start_rviz_cmd = Node(
         condition=UnlessCondition(use_namespace),
         package="rviz2",
         executable="rviz2",
-        arguments=["-d", rviz_config_file],
+        arguments=["-d", namespaced_rviz_config_file],
+        # arguments=["-d", rviz_config_file],
         output="screen",
-    )
-
-    namespaced_rviz_config_file = ReplaceString(
-        source_file=rviz_config_file,
-        replacements={
-            "<robot_namespace>": ("/", namespace),
-            "<map_topic>": ("/", LaunchConfiguration("worldname"), "/", robot, "/map"),
-            "<map_updates_topic>": ("/", LaunchConfiguration("worldname"), "/", robot, "/map_updates"),
-        },
     )
     start_namespaced_rviz_cmd = Node(
         condition=IfCondition(use_namespace),
