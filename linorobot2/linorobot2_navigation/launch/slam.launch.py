@@ -1,11 +1,15 @@
 import os
 from launch import LaunchDescription
-from launch.actions import DeclareLaunchArgument, IncludeLaunchDescription
+from launch.actions import (
+    DeclareLaunchArgument,
+    IncludeLaunchDescription,
+    GroupAction,
+)
 from launch.substitutions import LaunchConfiguration, PathJoinSubstitution
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch.conditions import IfCondition
 from launch_ros.substitutions import FindPackageShare
-from launch_ros.actions import Node
+from launch_ros.actions import Node, SetRemap, PushRosNamespace
 
 
 def get_path(package_name, subpaths):
@@ -26,22 +30,25 @@ def generate_launch_description():
     package_name = "linorobot2_navigation"
     slam_launch_path = get_path("slam_toolbox", ["launch", "online_async_launch.py"])
 
-    # slam_config_path = get_path("linorobot2_navigation", ["config", "slam.yaml"])
     if robot_base in ["zbotlino2", "zbotlinosick2"]:
         slam_config_path = get_path(package_name, ["config", robot_base, "slam.yaml"])
     else:
         slam_config_path = get_path(package_name, ["config", "slam.yaml"])
 
-    rviz_config_path = get_path("nav2_bringup", ["rviz", "nav2_default_view.rviz"])
-
+    rviz_config_path = get_path(package_name, ["rviz", "slam.rviz"])
     rviz = Node(
         package="rviz2",
         executable="rviz2",
         name="rviz2",
         output="screen",
+        namespace=LaunchConfiguration("namespace"),
         arguments=["-d", rviz_config_path],
         condition=IfCondition(LaunchConfiguration("rviz")),
         parameters=[{"use_sim_time": LaunchConfiguration("sim")}],
+        remappings=[
+            ("/tf", "tf"),
+            ("/tf_static", "tf_static"),
+        ],
     )
     return LaunchDescription(
         [
@@ -53,12 +60,21 @@ def generate_launch_description():
             DeclareLaunchArgument(
                 name="rviz", default_value="false", description="Run rviz"
             ),
-            IncludeLaunchDescription(
-                PythonLaunchDescriptionSource(slam_launch_path),
-                launch_arguments={
-                    "use_sim_time": LaunchConfiguration("sim"),
-                    "slam_params_file": slam_config_path,
-                }.items(),
+            GroupAction(
+                [
+                    SetRemap(src="/scan", dst="scan1"),
+                    SetRemap(src="/tf", dst="tf"),
+                    SetRemap(src="/tf_static", dst="tf_static"),
+                    SetRemap(src="/odom", dst="odom"),
+                    PushRosNamespace(namespace=LaunchConfiguration("namespace")),
+                    IncludeLaunchDescription(
+                        PythonLaunchDescriptionSource(slam_launch_path),
+                        launch_arguments={
+                            "use_sim_time": LaunchConfiguration("sim"),
+                            "slam_params_file": slam_config_path,
+                        }.items(),
+                    ),
+                ]
             ),
             rviz,
         ]
