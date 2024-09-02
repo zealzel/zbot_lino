@@ -11,9 +11,21 @@ from launch.events import Shutdown
 def generate_launch_description():
     robot = "lino2"
 
+    robots_env = os.getenv("ROBOT_INFO", "")
+    if not robots_env:
+        print("ROBOT_INFO env is not set")
+        print("example: ROBOT_INFO=lino2:13a5")
+        print("  robot is defined by 2 arguments which is separated by :")
+        print("    arg1: robot_type\n    arg2: robot_sn")
+        return LaunchDescription([])
+
+    robot_first = [e.split(":") for e in robots_env.split(";")][0]
+    robot_type, robot_sn = robot_first[0], robot_first[1]
+
     def worldname_namespace_to_rviz(context):
         worldname = context.launch_configurations.get("worldname", "")
-        namespace = context.launch_configurations.get("namespace", "")
+        # namespace = context.launch_configurations.get("namespace", "")
+        namespace = f"/{robot_type}_{robot_sn}"
         rviz_config_file = context.launch_configurations.get(
             "rviz_config",
             os.path.join(

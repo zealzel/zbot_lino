@@ -30,6 +30,18 @@ def generate_launch_description():
     package_name = "linorobot2_navigation"
     slam_launch_path = get_path("slam_toolbox", ["launch", "online_async_launch.py"])
 
+    robots_env = os.getenv("ROBOT_INFO", "")
+    if not robots_env:
+        print("ROBOT_INFO env is not set")
+        print("example: ROBOT_INFO=lino2:13a5")
+        print("  robot is defined by 2 arguments which is separated by :")
+        print("    arg1: robot_type\n    arg2: robot_sn")
+        return LaunchDescription([])
+
+    robot_first = [e.split(":") for e in robots_env.split(";")][0]
+    robot_type, robot_sn = robot_first[0], robot_first[1]
+    namespace = f"/{robot_type}_{robot_sn}"
+
     if robot_base in ["zbotlino2", "zbotlinosick2"]:
         slam_config_path = get_path(package_name, ["config", robot_base, "slam.yaml"])
     else:
@@ -41,7 +53,7 @@ def generate_launch_description():
         executable="rviz2",
         name="rviz2",
         output="screen",
-        namespace=LaunchConfiguration("namespace"),
+        namespace=namespace,
         arguments=["-d", rviz_config_path],
         condition=IfCondition(LaunchConfiguration("rviz")),
         parameters=[{"use_sim_time": LaunchConfiguration("sim")}],
@@ -66,7 +78,7 @@ def generate_launch_description():
                     SetRemap(src="/tf", dst="tf"),
                     SetRemap(src="/tf_static", dst="tf_static"),
                     SetRemap(src="/odom", dst="odom"),
-                    PushRosNamespace(namespace=LaunchConfiguration("namespace")),
+                    PushRosNamespace(namespace=namespace),
                     IncludeLaunchDescription(
                         PythonLaunchDescriptionSource(slam_launch_path),
                         launch_arguments={
