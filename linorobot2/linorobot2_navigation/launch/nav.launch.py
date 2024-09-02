@@ -21,13 +21,21 @@ def get_path(package_name, subpaths):
 
 def generate_launch_description():
     package_name = "linorobot2_navigation"
-    robot = "lino2"
-    fitrobot_install_path = get_package_share_directory("fitrobot")
+    # robot_type = "lino2"
+
+    robots_env = os.getenv("ROBOT_INFO", "")
+    if not robots_env:
+        print("ROBOT_INFO env is not set")
+        print("example: ROBOT_INFO=lino2:13a5")
+        print("  robot is defined by 2 arguments which is separated by :")
+        print("    arg1: robot_type\n    arg2: robot_sn")
+        return LaunchDescription([])
+
+    robot_first = [e.split(":") for e in robots_env.split(";")][0]
+    robot_type, robot_sn = robot_first[0], robot_first[1]
 
     # simulation only: 2wd|4wd|macanum|zbotlinolong
     # real robot: zbotlino(use rplidar)|zbotlinosick1
-    # robot_base = os.getenv('LINOROBOT2_BASE', 'zbotlinosick2')
-
     robot_base = os.getenv("LINOROBOT2_BASE", "zbotlino2")
     package_name = "linorobot2_navigation"
 
@@ -36,13 +44,7 @@ def generate_launch_description():
         robot_base = "zbotlino"
 
     params_file_path = get_path(package_name, ["config", robot_base, "navigation.yaml"])
-    namespace_arg = DeclareLaunchArgument(
-        name="namespace",
-        default_value="",
-        description="namespace",
-    )
-
-    # mapkey_arg = DeclareLaunchArgument(name="mapkey", description="mapkey")
+    namespace = f"/{robot_type}_{robot_sn}"
     worldname_arg = DeclareLaunchArgument(name="worldname", description="worldname")
 
     use_sim_arg = DeclareLaunchArgument(
@@ -74,19 +76,18 @@ def generate_launch_description():
     params_file = ReplaceString(
         source_file=params_file,
         replacements={
-            "<map_topic>": ("/", LaunchConfiguration("worldname"), "/", robot, "/map"),
-            "<scan1>": (LaunchConfiguration("namespace"), "/scan1"),
-            "<scan2>": (LaunchConfiguration("namespace"), "/scan2"),
-            "<costmap_filter_info>": (LaunchConfiguration("namespace"), "/costmap_filter_info"),
-            # "<costmap_filter_info>": ("/", LaunchConfiguration("worldname"), "/", robot, "/costmap_filter_info"),
+            "<map_topic>": ("/", LaunchConfiguration("worldname"), "/", robot_type, "/map"),
+            "<scan1>": f"{namespace}/scan1",
+            "<scan2>": f"{namespace}/scan2",
+            "<costmap_filter_info>": f"{namespace}/costmap_filter_info",
         },
     )
     rviz_config_file = LaunchConfiguration("rviz_config")
     rviz_config_file = ReplaceString(
         source_file=rviz_config_file,
         replacements={
-            "<map_topic>": ("/", LaunchConfiguration("worldname"), "/", robot, "/map"),
-            "<map_updates_topic>": ("/", LaunchConfiguration("worldname"), "/", robot, "/map_updates"),
+            "<map_topic>": ("/", LaunchConfiguration("worldname"), "/", robot_type, "/map"),
+            "<map_updates_topic>": ("/", LaunchConfiguration("worldname"), "/", robot_type, "/map_updates"),
         },
     )
 
@@ -102,14 +103,14 @@ def generate_launch_description():
     keepout_params_file = ReplaceString(
         source_file=keepout_params_file,
         replacements={
-            # "<keepout_filter_mask>": ("/", LaunchConfiguration("worldname"), "/", robot, "/keepout_filter_mask")
-            "keepout_filter_mask": ("/", LaunchConfiguration("worldname"), "/", robot, "/keepout_filter_mask")
+            "keepout_filter_mask": ( "/", LaunchConfiguration("worldname"), "/", robot_type, "/keepout_filter_mask",
+            )
         },
     )
     costmap_filter_info = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(costmap_filter_info_launch_path),
         launch_arguments={
-            "namespace": LaunchConfiguration("namespace"),
+            "namespace": namespace,
             "worldname": LaunchConfiguration("worldname"),
             "keepout_params_file": keepout_params_file,
         }.items(),
@@ -124,26 +125,24 @@ def generate_launch_description():
         launch_arguments={
             "map": "",
             "map_server": "False",
-            "namespace": LaunchConfiguration("namespace"),
+            "namespace": namespace,
             "use_namespace": "True",
             "use_sim_time": LaunchConfiguration("sim"),
             "params_file": params_file,
-            "mapkey": (LaunchConfiguration("worldname"), "/", robot),
+            "mapkey": (LaunchConfiguration("worldname"), "/", robot_type),
             "use_composition": LaunchConfiguration("use_composition"),
         }.items(),
     )
-    print("mapkey: ", f"/{robot}")
+    print("mapkey: ", f"/{robot_type}")
 
     rviz = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(os.path.join(nav_launch_dir, "rviz_launch.py")),
         launch_arguments={
             "use_sim_time": LaunchConfiguration("sim"),
             "worldname": LaunchConfiguration("worldname"),
-            "namespace": LaunchConfiguration("namespace"),
-            # "namespace": ("/", LaunchConfiguration("worldname"), "/", robot),
+            "namespace": namespace,
             "use_namespace": "True",
             "rviz_config": rviz_config_file,
-            # "rviz_config": LaunchConfiguration("rviz_config"),
             "log_level": "warn",
         }.items(),
         condition=IfCondition(LaunchConfiguration("rviz")),
@@ -152,7 +151,7 @@ def generate_launch_description():
         package=package_name,
         executable="repub_node",
         name="repub_node",
-        namespace=LaunchConfiguration("namespace"),
+        namespace=namespace,
         output="screen",
         remappings=[
             ("/range1/data", "range1/data"),
@@ -168,7 +167,7 @@ def generate_launch_description():
     # Temporary node to republish the range1/data & range2/data to range1_sensor & range2_sensor
     return LaunchDescription(
         [
-            namespace_arg,
+            # namespace_arg,
             worldname_arg,
             use_sim_arg,
             use_rviz_arg,
@@ -181,6 +180,6 @@ def generate_launch_description():
             rviz,
             uros_repub,
             LogInfo(msg=["params_file: ", params_file]),
-            LogInfo(msg=["keepout_params_file: ", keepout_params_file])
+            LogInfo(msg=["keepout_params_file: ", keepout_params_file]),
         ]
     )
