@@ -25,7 +25,10 @@ def generate_launch_description():
     def worldname_namespace_to_rviz(context):
         worldname = context.launch_configurations.get("worldname", "")
         # namespace = context.launch_configurations.get("namespace", "")
-        namespace = f"/{robot_type}_{robot_sn}"
+
+        # namespace = f"/{robot_type}_{robot_sn}"
+        namespace = f"/{robot_type}_{robot_sn}" if robot_type and robot_sn else ""
+
         rviz_config_file = context.launch_configurations.get(
             "rviz_config",
             os.path.join(
@@ -46,7 +49,8 @@ def generate_launch_description():
                 "<map_updates_topic>": f"/{worldname}/{robot}/map_updates",
             },
         )
-        if namespace and worldname:
+        # if namespace and worldname:
+        if worldname:
             rviz_node = Node(
                 package="rviz2",
                 executable="rviz2",

@@ -44,7 +44,9 @@ def generate_launch_description():
         robot_base = "zbotlino"
 
     params_file_path = get_path(package_name, ["config", robot_base, "navigation.yaml"])
-    namespace = f"/{robot_type}_{robot_sn}"
+
+    namespace = f"/{robot_type}_{robot_sn}" if robot_type and robot_sn else ""
+
     worldname_arg = DeclareLaunchArgument(name="worldname", description="worldname")
 
     use_sim_arg = DeclareLaunchArgument(
